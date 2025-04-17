@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Your Crypto ATM Location | Crypto ATMs PR</title>
+    <meta name="description" content="Submit your cryptocurrency ATM location to our Puerto Rico directory. Help others find Bitcoin and crypto ATMs across the island.">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="/" class="logo">Crypto ATMs PR</a>
+            <div class="nav-links">
+                <a href="/about.html">About</a>
+                <a href="/add-atm.html" class="add-atm-btn active">Add ATM</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="form-container">
+        <h1>Add Your Crypto ATM Location</h1>
+        <p class="form-intro">Help others find cryptocurrency ATMs in Puerto Rico by submitting your location. All submissions will be reviewed before being added to our directory.</p>
+
+        <form name="add-atm" method="POST" data-netlify="true" class="add-atm-form">
+            <input type="hidden" name="form-name" value="add-atm">
+            
+            <!-- Operator Information -->
+            <div class="form-section">
+                <h2>Operator Information</h2>
+                <div class="form-group">
+                    <label for="operator">ATM Operator/Company Name *</label>
+                    <input type="text" id="operator" name="operator" required>
+                </div>
+                <div class="form-group">
+                    <label for="website">Operator Website</label>
+                    <input type="url" id="website" name="website" placeholder="https://">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Contact Phone Number *</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+            </div>
+
+            <!-- Location Information -->
+            <div class="form-section">
+                <h2>Location Details</h2>
+                <div class="form-group">
+                    <label for="location_name">Location Name (e.g., Plaza Las Americas) *</label>
+                    <input type="text" id="location_name" name="location_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Street Address *</label>
+                    <input type="text" id="address" name="address" required>
+                </div>
+                <div class="form-group">
+                    <label for="city">City *</label>
+                    <input type="text" id="city" name="city" required>
+                </div>
+                <div class="form-group">
+                    <label for="zip">ZIP Code *</label>
+                    <input type="text" id="zip" name="zip" required>
+                </div>
+            </div>
+
+            <!-- ATM Features -->
+            <div class="form-section">
+                <h2>ATM Features</h2>
+                <div class="form-group">
+                    <label>Supported Cryptocurrencies *</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="crypto[]" value="BTC" checked> Bitcoin (BTC)
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="crypto[]" value="ETH"> Ethereum (ETH)
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="crypto[]" value="USDT"> Tether (USDT)
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="crypto[]" value="Other"> Other
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="hours">Operating Hours *</label>
+                    <input type="text" id="hours" name="hours" placeholder="e.g., Mon-Sun: 9:00 AM - 9:00 PM" required>
+                </div>
+            </div>
+
+            <!-- Additional Information -->
+            <div class="form-section">
+                <h2>Additional Information</h2>
+                <div class="form-group">
+                    <label for="notes">Additional Notes</label>
+                    <textarea id="notes" name="notes" rows="3" placeholder="Any additional information about the ATM location, access instructions, etc."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="submitter_email">Your Email *</label>
+                    <input type="email" id="submitter_email" name="submitter_email" required>
+                    <small>We'll only use this to contact you if we need more information.</small>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="submit-btn">Submit ATM Location</button>
+            </div>
+        </form>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 Puerto Crypto - Bitcoin ATM Directory</p>
+            <div class="footer-nav">
+                <a href="/about.html">About</a>
+                <a href="/privacy.html">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html> 

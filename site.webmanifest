@@ -1,0 +1,21 @@
+{
+    "name": "Puerto Crypto ATM Directory",
+    "short_name": "Puerto Crypto",
+    "description": "Find Bitcoin ATMs in Puerto Rico - Your comprehensive directory of cryptocurrency ATM locations across the island.",
+    "start_url": "https://cryptoatmspr.com",
+    "icons": [
+        {
+            "src": "https://cryptoatmspr.com/icons/favicon-32x32.png",
+            "sizes": "32x32",
+            "type": "image/png"
+        },
+        {
+            "src": "https://cryptoatmspr.com/icons/favicon-16x16.png",
+            "sizes": "16x16",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#FF385C",
+    "background_color": "#ffffff",
+    "display": "standalone"
+} 

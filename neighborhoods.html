@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin ATMs by Neighborhood in Puerto Rico | Crypto ATMs PR</title>
+    <meta name="description" content="Find Bitcoin ATMs in neighborhoods across Puerto Rico. Locate cryptocurrency ATMs in San Juan, Carolina, Bayamón, and other cities in PR.">
+    <meta name="keywords" content="Bitcoin ATM Puerto Rico, Crypto ATM locations, San Juan Bitcoin, Carolina cryptocurrency, Bayamón Bitcoin ATM">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+</head>
+<body>
+    <header>
+        <nav class="navbar" aria-label="Main navigation">
+            <a href="/" class="logo">Crypto ATMs PR</a>
+            <div class="nav-links">
+                <a href="/about.html">About</a>
+                <a href="/add-atm.html" class="add-atm-btn">Add ATM</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="search-container" aria-label="Search ATMs">
+            <div class="search-bar">
+                <label for="searchInput" class="visually-hidden">Search Bitcoin ATMs</label>
+                <input type="text" 
+                       id="searchInput" 
+                       placeholder="Search Bitcoin ATMs by city, location, or operator"
+                       aria-label="Search Bitcoin ATMs">
+                <button id="searchButton" aria-label="Search">Search</button>
+            </div>
+        </section>
+
+        <nav class="filters-bar" aria-label="Filter options">
+            <a href="/" class="filter-button" data-filter="all">
+                <i class="fas fa-list" aria-hidden="true"></i>
+                <span>All ATMs</span>
+            </a>
+            <a href="/neighborhoods.html" class="filter-button active" data-filter="neighborhoods">
+                <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                <span>Neighborhoods</span>
+            </a>
+            <a href="/cryptocurrencies.html" class="filter-button" data-filter="cryptocurrencies">
+                <i class="fas fa-coins" aria-hidden="true"></i>
+                <span>Cryptocurrencies</span>
+            </a>
+        </nav>
+
+        <div class="content-grid">
+            <section class="neighborhoods-grid" aria-label="Neighborhoods">
+                <h2>Bitcoin ATMs by Neighborhood in Puerto Rico</h2>
+                <div class="neighborhood-cards">
+                    <div class="neighborhood-card">
+                        <h3>San Juan</h3>
+                        <p>8 ATMs Available</p>
+                        <a href="/?neighborhood=san-juan" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Carolina</h3>
+                        <p>6 ATMs Available</p>
+                        <a href="/?neighborhood=carolina" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Bayamón</h3>
+                        <p>5 ATMs Available</p>
+                        <a href="/?neighborhood=bayamon" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Ponce</h3>
+                        <p>4 ATMs Available</p>
+                        <a href="/?neighborhood=ponce" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Caguas</h3>
+                        <p>4 ATMs Available</p>
+                        <a href="/?neighborhood=caguas" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Mayagüez</h3>
+                        <p>3 ATMs Available</p>
+                        <a href="/?neighborhood=mayaguez" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Guaynabo</h3>
+                        <p>2 ATMs Available</p>
+                        <a href="/?neighborhood=guaynabo" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Fajardo</h3>
+                        <p>2 ATMs Available</p>
+                        <a href="/?neighborhood=fajardo" class="view-atms-btn">View ATMs</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div id="atmModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="atmModalTitle">
+        <div class="modal-content">
+            <!-- Modal content will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 Puerto Crypto - Bitcoin ATM Directory</p>
+            <div class="footer-nav">
+                <a href="/about.html">About</a>
+                <a href="/add-atm.html" class="add-atm-btn">Add ATM</a>
+                <a href="/privacy.html">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html> 

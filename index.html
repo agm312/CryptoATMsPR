@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin ATMs in Puerto Rico | Find Crypto ATM Locations Near You</title>
+    <meta name="description" content="Locate Bitcoin ATMs in Puerto Rico with our comprehensive directory. Find 30+ cryptocurrency ATM locations in San Juan, Carolina, Bayamón, and across PR. Real-time updates, directions & supported coins.">
+    <meta name="keywords" content="Bitcoin ATM Puerto Rico, Crypto ATM San Juan, Bitcoin locations PR, cryptocurrency ATM Puerto Rico, Athena Bitcoin PR, Coinflip Puerto Rico">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Bitcoin ATMs in Puerto Rico | Find Crypto ATM Locations Near You">
+    <meta property="og:description" content="Locate Bitcoin ATMs in Puerto Rico with our comprehensive directory. Find 30+ cryptocurrency ATM locations in San Juan, Carolina, Bayamón, and across PR.">
+    <meta property="og:url" content="https://cryptoatmspr.com">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://cryptoatmspr.com/images/bitcoin-atm-pr.jpg">
+    
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Bitcoin ATMs in Puerto Rico | Find Crypto ATM Locations">
+    <meta name="twitter:description" content="Find Bitcoin ATMs across Puerto Rico. 30+ locations in San Juan, Carolina, Bayamón & more. Real-time updates & directions.">
+    <meta name="twitter:image" content="https://cryptoatmspr.com/images/bitcoin-atm-pr.jpg">
+    
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://cryptoatmspr.com">
+    <link rel="alternate" hreflang="es" href="https://cryptoatmspr.com/es">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Puerto Crypto - Bitcoin ATM Directory",
+        "description": "Comprehensive directory of Bitcoin and cryptocurrency ATMs across Puerto Rico",
+        "url": "https://cryptoatmspr.com",
+        "areaServed": {
+            "@type": "State",
+            "name": "Puerto Rico"
+        },
+        "hasMap": "https://cryptoatmspr.com/#map"
+    }
+    </script>
+</head>
+<body>
+    <header>
+        <nav class="navbar" aria-label="Main navigation">
+            <a href="/" class="logo">Crypto ATMs PR</a>
+            <div class="nav-links">
+                <a href="/about.html">About</a>
+                <a href="/add-atm.html" class="add-atm-btn">Add ATM</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="search-container" aria-label="Search ATMs">
+            <div class="search-bar">
+                <label for="searchInput" class="visually-hidden">Search Bitcoin ATMs</label>
+                <input type="text" 
+                       id="searchInput" 
+                       placeholder="Search Bitcoin ATMs by city, location, or operator"
+                       aria-label="Search Bitcoin ATMs">
+                <button id="searchButton" aria-label="Search">Search</button>
+            </div>
+        </section>
+
+        <nav class="filters-bar" aria-label="Filter options">
+            <a href="/" class="filter-button active" data-filter="all">
+                <i class="fas fa-list" aria-hidden="true"></i>
+                <span>All ATMs</span>
+            </a>
+            <a href="/neighborhoods.html" class="filter-button" data-filter="neighborhoods">
+                <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                <span>Neighborhoods</span>
+            </a>
+            <a href="/cryptocurrencies.html" class="filter-button" data-filter="cryptocurrencies">
+                <i class="fas fa-coins" aria-hidden="true"></i>
+                <span>Cryptocurrencies</span>
+            </a>
+        </nav>
+
+        <div class="content-grid">
+            <section class="atm-list" aria-label="Bitcoin ATM Locations"></section>
+            <section class="map-container" aria-label="Interactive Map">
+                <div id="map" role="application" aria-label="Map of Bitcoin ATM locations"></div>
+            </section>
+            <section class="neighborhoods-grid" style="display: none;" aria-label="Neighborhoods">
+                <h2>Bitcoin ATMs by Neighborhood in Puerto Rico</h2>
+                <div class="neighborhood-cards"></div>
+            </section>
+            <section class="crypto-grid" style="display: none;" aria-label="Cryptocurrencies">
+                <h2>Supported Cryptocurrencies at Puerto Rico ATMs</h2>
+                <div class="crypto-cards"></div>
+            </section>
+        </div>
+    </main>
+
+    <div id="atmModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="atmModalTitle">
+        <div class="modal-content">
+            <!-- Modal content will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 Puerto Crypto - Bitcoin ATM Directory</p>
+            <div class="footer-nav">
+                <a href="/about.html">About</a>
+                <a href="/add-atm.html" class="add-atm-btn">Add ATM</a>
+                <a href="/privacy.html">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBP_vwigGB-0Ecmcz4GFSqXqMfC0LLgfIQ&callback=initMap&v=beta&libraries=marker" async></script>
+    <script src="script.js"></script>
+</body>
+</html> 
