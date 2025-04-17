@@ -487,8 +487,18 @@ function handleRoute() {
     // Handle different routes
     if (neighborhood) {
         // Show specific neighborhood ATMs
-        showNeighborhoodATMs(decodeURIComponent(neighborhood));
-        document.querySelector('[data-filter="neighborhoods"]').classList.add('active');
+        try {
+            const decodedNeighborhood = decodeURIComponent(neighborhood).trim();
+            showNeighborhoodATMs(decodedNeighborhood);
+            document.querySelector('[data-filter="neighborhoods"]').classList.add('active');
+        } catch (e) {
+            console.error('Error decoding neighborhood:', e);
+            // Fallback to neighborhoods view
+            if (sections.neighborhoodsGrid) {
+                sections.neighborhoodsGrid.style.display = 'block';
+                loadNeighborhoodsContent();
+            }
+        }
     } else if (path.includes('neighborhoods.html')) {
         document.querySelector('[data-filter="neighborhoods"]').classList.add('active');
         if (sections.neighborhoodsGrid) {
@@ -497,8 +507,18 @@ function handleRoute() {
         }
     } else if (crypto) {
         // Show specific cryptocurrency ATMs
-        showCryptoATMs(crypto);
-        document.querySelector('[data-filter="cryptocurrencies"]').classList.add('active');
+        try {
+            const decodedCrypto = decodeURIComponent(crypto).trim();
+            showCryptoATMs(decodedCrypto);
+            document.querySelector('[data-filter="cryptocurrencies"]').classList.add('active');
+        } catch (e) {
+            console.error('Error decoding crypto:', e);
+            // Fallback to cryptocurrencies view
+            if (sections.cryptoGrid) {
+                sections.cryptoGrid.style.display = 'block';
+                loadCryptocurrenciesContent();
+            }
+        }
     } else if (path.includes('cryptocurrencies.html')) {
         document.querySelector('[data-filter="cryptocurrencies"]').classList.add('active');
         if (sections.cryptoGrid) {
@@ -898,7 +918,6 @@ function initMap() {
     try {
         // Create the map
         map = new google.maps.Map(document.getElementById('map'), {
-            mapId: process.env.GOOGLE_MAPS_API_KEY, // Using environment variable
             center: { lat: 18.4655, lng: -66.1057 }, // Center on Puerto Rico
             zoom: 10,
             styles: [
