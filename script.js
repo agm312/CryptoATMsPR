@@ -428,11 +428,22 @@ let searchQuery = '';
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', () => {
-    handleRoute();
-    setupEventListeners();
-    if (typeof google !== 'undefined') {
+    if (typeof google === 'undefined') {
+        console.error("Google Maps API not loaded.");
+        const mapContainer = document.getElementById('map');
+        if (mapContainer) {
+            mapContainer.innerHTML = `
+                <div class="api-error">
+                    <h2>Map Loading Error</h2>
+                    <p>There was an error loading the map. Please try refreshing the page.</p>
+                </div>
+            `;
+        }
+    } else {
         initMap();
     }
+    setupEventListeners();
+    handleRoute();
 });
 
 function setupEventListeners() {
@@ -451,7 +462,7 @@ function setupEventListeners() {
     });
 
     // Set up search functionality
-    const searchInput = document.querySelector('#search-input');
+    const searchInput = document.querySelector('#searchInput');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
@@ -471,27 +482,39 @@ function handleRoute() {
 
     // Hide all content sections initially
     document.querySelectorAll('.content-section').forEach(section => {
-        section.style.display = 'none';
+        if (section) section.style.display = 'none';
     });
 
     const path = window.location.pathname;
 
     // Show appropriate content based on path
     if (path.includes('neighborhoods')) {
-        document.querySelector('.neighborhoods-section').style.display = 'block';
-        document.querySelector('[data-filter="neighborhoods"]').classList.add('active');
-        document.querySelector('#map-container').style.display = 'none';
+        const neighborhoodsSection = document.querySelector('.neighborhoods-grid');
+        if (neighborhoodsSection) neighborhoodsSection.style.display = 'block';
+        
+        const neighborhoodsButton = document.querySelector('[data-filter="neighborhoods"]');
+        if (neighborhoodsButton) neighborhoodsButton.classList.add('active');
+        
         loadNeighborhoodsContent();
     } else if (path.includes('cryptocurrencies')) {
-        document.querySelector('.cryptocurrencies-section').style.display = 'block';
-        document.querySelector('[data-filter="cryptocurrencies"]').classList.add('active');
-        document.querySelector('#map-container').style.display = 'none';
+        const cryptoSection = document.querySelector('.crypto-grid');
+        if (cryptoSection) cryptoSection.style.display = 'block';
+        
+        const cryptoButton = document.querySelector('[data-filter="cryptocurrencies"]');
+        if (cryptoButton) cryptoButton.classList.add('active');
+        
         loadCryptocurrenciesContent();
     } else {
         // Default to all ATMs view
-        document.querySelector('.atm-list').style.display = 'block';
-        document.querySelector('[data-filter="all"]').classList.add('active');
-        document.querySelector('#map-container').style.display = 'block';
+        const atmList = document.querySelector('.atm-list');
+        if (atmList) atmList.style.display = 'block';
+        
+        const mapContainer = document.querySelector('.map-container');
+        if (mapContainer) mapContainer.style.display = 'block';
+        
+        const allButton = document.querySelector('[data-filter="all"]');
+        if (allButton) allButton.classList.add('active');
+        
         if (typeof google !== 'undefined' && map) {
             updateMarkers();
         }
@@ -508,7 +531,7 @@ function setFilter(filter) {
             newUrl = '/cryptocurrencies.html';
             break;
         default:
-            newUrl = '/index.html';
+            newUrl = '/';
     }
     
     history.pushState({}, '', newUrl);
@@ -758,7 +781,7 @@ function closeModal() {
 function resetFilters() {
     currentFilter = 'all';
     searchQuery = '';
-    document.querySelector('#search-input').value = '';
+    document.querySelector('#searchInput').value = '';
     document.querySelectorAll('.filter-button').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.filter === 'all');
     });
@@ -882,9 +905,14 @@ function showCryptoATMs(cryptocurrency) {
 }
 
 function initMap() {
+    const mapElement = document.getElementById('map');
+    if (!mapElement) {
+        console.error("Map element not found.");
+        return;
+    }
+
     try {
-        // Create the map
-        map = new google.maps.Map(document.getElementById('map'), {
+        map = new google.maps.Map(mapElement, {
             center: { lat: 18.4655, lng: -66.1057 }, // Center on Puerto Rico
             zoom: 10,
             styles: [
@@ -902,14 +930,11 @@ function initMap() {
 
     } catch (error) {
         console.error('Error initializing map:', error);
-        const mapContainer = document.getElementById('map');
-        if (mapContainer) {
-            mapContainer.innerHTML = `
-                <div class="api-error">
-                    <h2>Map Loading Error</h2>
-                    <p>There was an error loading the map. Please try refreshing the page.</p>
-                </div>
-            `;
-        }
+        mapElement.innerHTML = `
+            <div class="api-error">
+                <h2>Map Loading Error</h2>
+                <p>There was an error loading the map. Please try refreshing the page.</p>
+            </div>
+        `;
     }
 } 
