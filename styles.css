@@ -171,24 +171,31 @@ main {
     box-shadow: 0 2px 4px var(--shadow-color);
 }
 
-.atm-grid {
+.atm-grid,
+.neighborhood-cards,
+.crypto-cards {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
-    padding: 24px;
-    max-width: 1400px;
-    margin: 0 auto;
+    margin-top: 24px;
 }
 
-.atm-card {
-    background: #fff;
+.atm-card,
+.neighborhood-card,
+.crypto-card {
+    background: white;
     border-radius: 12px;
+    padding: 24px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
     transition: transform 0.2s ease-in-out;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
-.atm-card:hover {
+.atm-card:hover,
+.neighborhood-card:hover,
+.crypto-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
@@ -309,7 +316,9 @@ main {
 }
 
 @media (max-width: 1200px) {
-    .atm-grid {
+    .atm-grid,
+    .neighborhood-cards,
+    .crypto-cards {
         grid-template-columns: repeat(2, 1fr);
     }
 }
@@ -319,9 +328,10 @@ main {
         padding: 0 16px;
     }
     
-    .atm-grid {
+    .atm-grid,
+    .neighborhood-cards,
+    .crypto-cards {
         grid-template-columns: 1fr;
-        padding: 16px;
     }
 
     .footer-content {
@@ -412,27 +422,6 @@ main {
     padding: 24px;
 }
 
-.neighborhood-cards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    margin-top: 24px;
-}
-
-.neighborhood-card {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease-in-out;
-}
-
-.neighborhood-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
 .neighborhood-card h3 {
     font-size: 1.5rem;
     margin-bottom: 8px;
@@ -466,43 +455,6 @@ main {
     padding: 24px;
 }
 
-.crypto-cards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    margin-top: 24px;
-}
-
-.crypto-card {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease-in-out;
-}
-
-.crypto-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.crypto-icon {
-    width: 64px;
-    height: 64px;
-    margin: 0 auto 16px;
-    background: #f5f5f5;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.crypto-icon i {
-    font-size: 32px;
-    color: var(--primary-color);
-}
-
 .crypto-card h3 {
     font-size: 1.5rem;
     margin-bottom: 8px;
@@ -530,11 +482,6 @@ main {
 }
 
 @media (max-width: 768px) {
-    .neighborhood-cards,
-    .crypto-cards {
-        grid-template-columns: 1fr;
-    }
-    
     .neighborhoods-grid,
     .crypto-grid {
         padding: 16px;

@@ -465,9 +465,6 @@ function setupEventListeners() {
 
 function handleRoute() {
     const path = window.location.pathname;
-    const params = new URLSearchParams(window.location.search);
-    const neighborhood = params.get('neighborhood');
-    const crypto = params.get('crypto');
     
     // Remove active class from all filter buttons
     document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
@@ -484,46 +481,46 @@ function handleRoute() {
         if (section) section.style.display = 'none';
     });
 
-    // Handle different routes
-    if (neighborhood) {
-        // Show specific neighborhood ATMs
-        try {
-            const decodedNeighborhood = decodeURIComponent(neighborhood).trim();
-            showNeighborhoodATMs(decodedNeighborhood);
-            document.querySelector('[data-filter="neighborhoods"]').classList.add('active');
-        } catch (e) {
-            console.error('Error decoding neighborhood:', e);
-            // Fallback to neighborhoods view
+    // Parse the path to handle clean URLs
+    const pathParts = path.split('/').filter(Boolean);
+    
+    if (pathParts[0] === 'neighborhood') {
+        // Handle neighborhood pages
+        document.querySelector('[data-filter="neighborhoods"]').classList.add('active');
+        const citySlug = pathParts[1]?.replace(/-bitcoin-atms$/, '');
+        if (citySlug) {
+            const city = atmData.find(atm => {
+                const atmCitySlug = atm.city.toLowerCase()
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '')
+                    .replace(/\s+/g, '-')
+                    .replace(/[^a-z0-9-]/g, '');
+                return atmCitySlug === citySlug;
+            })?.city;
+            if (city) {
+                showNeighborhoodATMs(city);
+            }
+        } else {
             if (sections.neighborhoodsGrid) {
                 sections.neighborhoodsGrid.style.display = 'block';
                 loadNeighborhoodsContent();
             }
         }
-    } else if (path.includes('neighborhoods.html')) {
-        document.querySelector('[data-filter="neighborhoods"]').classList.add('active');
-        if (sections.neighborhoodsGrid) {
-            sections.neighborhoodsGrid.style.display = 'block';
-            loadNeighborhoodsContent();
-        }
-    } else if (crypto) {
-        // Show specific cryptocurrency ATMs
-        try {
-            const decodedCrypto = decodeURIComponent(crypto).trim();
-            showCryptoATMs(decodedCrypto);
-            document.querySelector('[data-filter="cryptocurrencies"]').classList.add('active');
-        } catch (e) {
-            console.error('Error decoding crypto:', e);
-            // Fallback to cryptocurrencies view
+    } else if (pathParts[0] === 'cryptocurrency') {
+        // Handle cryptocurrency pages
+        document.querySelector('[data-filter="cryptocurrencies"]').classList.add('active');
+        const cryptoSlug = pathParts[1]?.replace(/-atms-puerto-rico$/, '');
+        if (cryptoSlug) {
+            const crypto = atmData.flatMap(atm => atm.coins)
+                .find(coin => coin.toLowerCase().replace(/\s+/g, '-') === cryptoSlug);
+            if (crypto) {
+                showCryptoATMs(crypto);
+            }
+        } else {
             if (sections.cryptoGrid) {
                 sections.cryptoGrid.style.display = 'block';
                 loadCryptocurrenciesContent();
             }
-        }
-    } else if (path.includes('cryptocurrencies.html')) {
-        document.querySelector('[data-filter="cryptocurrencies"]').classList.add('active');
-        if (sections.cryptoGrid) {
-            sections.cryptoGrid.style.display = 'block';
-            loadCryptocurrenciesContent();
         }
     } else {
         // Default to showing all ATMs
@@ -553,15 +550,22 @@ function loadNeighborhoodsContent() {
         cities[atm.city] = (cities[atm.city] || 0) + 1;
     });
 
-    // Create neighborhood cards
+    // Create neighborhood cards with clean URLs
     neighborhoodCards.innerHTML = Object.entries(cities)
-        .map(([city, count]) => `
-            <div class="neighborhood-card">
-                <h3>${city}</h3>
-                <p>${count} ATMs Available</p>
-                <a href="/?neighborhood=${city.toLowerCase()}" class="view-atms-btn">View ATMs</a>
-            </div>
-        `).join('');
+        .map(([city, count]) => {
+            const urlSlug = city.toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z0-9-]/g, '');
+            return `
+                <div class="neighborhood-card">
+                    <h3>${city}</h3>
+                    <p>${count} ATMs Available</p>
+                    <a href="/neighborhood/${urlSlug}-bitcoin-atms" class="view-atms-btn">View ATMs</a>
+                </div>
+            `;
+        }).join('');
 }
 
 function loadCryptocurrenciesContent() {
@@ -572,13 +576,14 @@ function loadCryptocurrenciesContent() {
     const cryptos = new Set();
     atmData.forEach(atm => atm.coins.forEach(coin => cryptos.add(coin)));
 
-    // Create crypto cards
+    // Create crypto cards with clean URLs
     cryptoCards.innerHTML = Array.from(cryptos)
         .map(crypto => {
             const count = atmData.filter(atm => atm.coins.includes(crypto)).length;
             const symbol = crypto === 'Bitcoin' ? 'BTC' : 
                           crypto === 'Ethereum' ? 'ETH' : 
                           crypto.toUpperCase();
+            const urlSlug = crypto.toLowerCase().replace(/\s+/g, '-');
             return `
                 <div class="crypto-card">
                     <div class="crypto-icon">
@@ -587,7 +592,7 @@ function loadCryptocurrenciesContent() {
                     <h3>${crypto}</h3>
                     <p class="crypto-symbol">${symbol}</p>
                     <p>${count} ATMs Available</p>
-                    <a href="/?crypto=${symbol.toLowerCase()}" class="view-atms-btn">View ATMs</a>
+                    <a href="/cryptocurrency/${urlSlug}-atms-puerto-rico" class="view-atms-btn">View ATMs</a>
                 </div>
             `;
         }).join('');
