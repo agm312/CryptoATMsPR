@@ -898,7 +898,7 @@ function initMap() {
     try {
         // Create the map
         map = new google.maps.Map(document.getElementById('map'), {
-            mapId: 'REPLACE_WITH_YOUR_MAP_ID', // 👈 Replace this with the Map ID you get from the Google Cloud Console
+            mapId: process.env.GOOGLE_MAPS_API_KEY, // Using environment variable
             center: { lat: 18.4655, lng: -66.1057 }, // Center on Puerto Rico
             zoom: 10,
             styles: [
