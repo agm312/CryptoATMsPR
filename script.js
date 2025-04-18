@@ -479,9 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (currentPath === '/' || currentPath === '/index.html') {
         // Home page - initialize map and ATM list
-        if (typeof google !== 'undefined') {
-            initMap();
-        }
+        loadGoogleMaps();
         updateATMList(searchTerm);
     } else if (currentPath === '/neighborhoods' || currentPath === '/neighborhoods.html') {
         if (city) {
@@ -1130,16 +1128,47 @@ function showCryptoATMs(cryptocurrency) {
     `;
 }
 
+// Load Google Maps with error handling
+function loadGoogleMaps() {
+    // Check if Google Maps is already loaded
+    if (typeof google !== 'undefined' && typeof google.maps !== 'undefined') {
+        initMap();
+        return;
+    }
+
+    // Get the map container
+    const mapContainer = document.getElementById('map');
+    if (!mapContainer) {
+        console.error('Map container not found');
+        return;
+    }
+
+    // Create a script element for Google Maps
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&callback=initMap`;
+    script.async = true;
+    script.defer = true;
+
+    // Handle script loading error
+    script.onerror = () => {
+        console.error('Failed to load Google Maps script');
+        displayMapError('Failed to load Google Maps. Please check your internet connection and try again.');
+    };
+
+    // Add the script to the document
+    document.head.appendChild(script);
+}
+
+// Initialize the map
 function initMap() {
-    // Check if the map element exists
     const mapElement = document.getElementById('map');
     if (!mapElement) {
-        console.error("Map element not found.");
+        console.error('Map element not found');
         return;
     }
 
     try {
-        // Create the map
+        // Create the map with error boundaries
         map = new google.maps.Map(mapElement, {
             center: { lat: 18.4655, lng: -66.1057 }, // Center on Puerto Rico
             zoom: 10,
@@ -1152,20 +1181,75 @@ function initMap() {
             ],
             mapTypeControl: true,
             streetViewControl: true,
-            fullscreenControl: true
+            fullscreenControl: true,
+            gestureHandling: 'cooperative'
         });
 
         // Initialize markers and list
         updateMarkers();
-        updateATMList();
+        
+        // Add error boundaries
+        google.maps.event.addListenerOnce(map, 'idle', () => {
+            console.log('Map loaded successfully');
+        });
+
+        google.maps.event.addListenerOnce(map, 'error', () => {
+            console.error('Error occurred while loading map');
+            displayMapError('An error occurred while loading the map. Please try refreshing the page.');
+        });
 
     } catch (error) {
         console.error('Error initializing map:', error);
+        displayMapError('Failed to initialize the map. Please try refreshing the page.');
+    }
+}
+
+// Display map error message
+function displayMapError(message) {
+    const mapElement = document.getElementById('map');
+    if (mapElement) {
         mapElement.innerHTML = `
-            <div class="api-error">
+            <div class="map-error">
                 <h2>Map Loading Error</h2>
-                <p>There was an error loading the map. Please try refreshing the page.</p>
+                <p>${message}</p>
+                <div class="error-actions">
+                    <button onclick="retryLoadMap()" class="retry-btn">
+                        <i class="fas fa-sync-alt"></i> Retry Loading Map
+                    </button>
+                    <button onclick="showATMList()" class="view-list-btn">
+                        <i class="fas fa-list"></i> View ATM List
+                    </button>
+                </div>
             </div>
         `;
     }
-} 
+}
+
+// Retry loading the map
+function retryLoadMap() {
+    const mapElement = document.getElementById('map');
+    if (mapElement) {
+        mapElement.innerHTML = '<div class="loading">Loading map...</div>';
+        loadGoogleMaps();
+    }
+}
+
+// Show ATM list when map fails
+function showATMList() {
+    const atmListContainer = document.querySelector('.atm-list');
+    if (atmListContainer) {
+        atmListContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+// Handle browser navigation
+window.addEventListener('popstate', () => {
+    const currentPath = window.location.pathname;
+    if (currentPath === '/' || currentPath === '/index.html') {
+        if (typeof google === 'undefined' || typeof google.maps === 'undefined') {
+            loadGoogleMaps();
+        } else {
+            initMap();
+        }
+    }
+}); 
