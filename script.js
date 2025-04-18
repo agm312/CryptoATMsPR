@@ -558,32 +558,58 @@ function loadNeighborhoodsContent() {
     `;
 }
 
-// Get cryptocurrency icon
-function getCryptoIcon(crypto) {
-    switch(crypto.toLowerCase()) {
-        case 'bitcoin':
-        case 'btc':
-            return 'fab fa-bitcoin';
-        case 'ethereum':
-        case 'eth':
-            return 'fab fa-ethereum';
-        default:
-            return 'fas fa-coins';
-    }
+// Normalize cryptocurrency name
+function normalizeCryptoName(crypto) {
+    const normalizeMap = {
+        'btc': 'Bitcoin',
+        'bitcoin': 'Bitcoin',
+        'eth': 'Ethereum',
+        'ethereum': 'Ethereum',
+        'usdt': 'Tether',
+        'tether': 'Tether',
+        'ltc': 'Litecoin',
+        'litecoin': 'Litecoin',
+        'doge': 'Dogecoin',
+        'dogecoin': 'Dogecoin',
+        'xrp': 'Ripple',
+        'ripple': 'Ripple',
+        'bch': 'Bitcoin Cash',
+        'bitcoin cash': 'Bitcoin Cash',
+        'usdc': 'USD Coin',
+        'usd coin': 'USD Coin'
+    };
+    return normalizeMap[crypto.toLowerCase()] || crypto;
 }
 
-// Get standardized crypto name and symbol
-function getCryptoInfo(crypto) {
-    switch(crypto.toLowerCase()) {
-        case 'bitcoin':
-        case 'btc':
-            return { name: 'Bitcoin', symbol: 'BTC' };
-        case 'ethereum':
-        case 'eth':
-            return { name: 'Ethereum', symbol: 'ETH' };
-        default:
-            return { name: crypto, symbol: crypto.toUpperCase() };
-    }
+// Get cryptocurrency symbol
+function getCryptoSymbol(crypto) {
+    const symbolMap = {
+        'Bitcoin': 'BTC',
+        'Ethereum': 'ETH',
+        'Tether': 'USDT',
+        'Litecoin': 'LTC',
+        'Dogecoin': 'DOGE',
+        'Ripple': 'XRP',
+        'Bitcoin Cash': 'BCH',
+        'USD Coin': 'USDC'
+    };
+    return symbolMap[crypto] || crypto.toUpperCase();
+}
+
+// Get cryptocurrency icon
+function getCryptoIcon(crypto) {
+    const iconMap = {
+        'Bitcoin': 'fab fa-bitcoin',
+        'Ethereum': 'fab fa-ethereum',
+        'Tether': 'fas fa-dollar-sign',
+        'Litecoin': 'fab fa-litecoin',
+        'Dogecoin': 'fas fa-dog',
+        'Ripple': 'fas fa-water',
+        'Bitcoin Cash': 'fab fa-bitcoin',
+        'USD Coin': 'fas fa-dollar-sign',
+        'default': 'fas fa-coins'
+    };
+    return iconMap[crypto] || iconMap.default;
 }
 
 // Load cryptocurrencies content
@@ -596,23 +622,20 @@ function loadCryptocurrenciesContent() {
     
     atmData.forEach(atm => {
         atm.coins.forEach(coin => {
-            const normalizedCoin = coin.toLowerCase();
-            const count = cryptoMap.get(normalizedCoin) || 0;
-            cryptoMap.set(normalizedCoin, count + 1);
+            const normalizedName = normalizeCryptoName(coin);
+            const count = cryptoMap.get(normalizedName) || 0;
+            cryptoMap.set(normalizedName, count + 1);
         });
     });
 
     // Convert to array and sort by count
     const cryptoStats = Array.from(cryptoMap.entries())
-        .map(([coin, count]) => {
-            const info = getCryptoInfo(coin);
-            return {
-                name: info.name,
-                symbol: info.symbol,
-                count: count,
-                icon: getCryptoIcon(coin)
-            };
-        })
+        .map(([name, count]) => ({
+            name: name,
+            symbol: getCryptoSymbol(name),
+            count: count,
+            icon: getCryptoIcon(name)
+        }))
         .sort((a, b) => b.count - a.count);
 
     cryptoGrid.innerHTML = `
@@ -890,12 +913,12 @@ function showCryptoATMs(cryptocurrency) {
     const contentArea = document.querySelector('.content-grid');
     if (!contentArea) return;
 
-    // Normalize the cryptocurrency name for case-insensitive comparison
-    const normalizedCrypto = cryptocurrency.toLowerCase();
+    // Normalize the cryptocurrency name
+    const normalizedCrypto = normalizeCryptoName(cryptocurrency);
     
     // Filter ATMs that support this cryptocurrency
     const filteredATMs = atmData.filter(atm => 
-        atm.coins.some(coin => coin.toLowerCase() === normalizedCrypto)
+        atm.coins.some(coin => normalizeCryptoName(coin) === normalizedCrypto)
     );
 
     // Hide other sections
@@ -907,8 +930,8 @@ function showCryptoATMs(cryptocurrency) {
     contentArea.innerHTML = `
         <div class="crypto-atm-list">
             <div class="crypto-header">
-                <h2>${cryptocurrency} ATMs in Puerto Rico</h2>
-                <p class="atm-count">Found ${filteredATMs.length} ATM${filteredATMs.length !== 1 ? 's' : ''} supporting ${cryptocurrency}</p>
+                <h2>${normalizedCrypto} ATMs in Puerto Rico</h2>
+                <p class="atm-count">Found ${filteredATMs.length} ATM${filteredATMs.length !== 1 ? 's' : ''} supporting ${normalizedCrypto}</p>
                 <button onclick="setFilter('cryptocurrencies')" class="back-button">
                     <i class="fas fa-arrow-left"></i> Back to Cryptocurrencies
                 </button>
@@ -936,7 +959,7 @@ function showCryptoATMs(cryptocurrency) {
                                 <span>${atm.hours}</span>
                             </div>
                             <div class="coins">
-                                ${atm.coins.map(coin => `<span class="coin-badge">${coin}</span>`).join('')}
+                                ${atm.coins.map(coin => `<span class="coin-badge">${normalizeCryptoName(coin)}</span>`).join('')}
                             </div>
                         </div>
                     </article>
@@ -946,7 +969,7 @@ function showCryptoATMs(cryptocurrency) {
     `;
 
     // Update URL to reflect the current cryptocurrency
-    window.history.pushState({}, '', `/?cryptocurrency=${encodeURIComponent(cryptocurrency.toLowerCase())}`);
+    window.history.pushState({}, '', `/?cryptocurrency=${encodeURIComponent(normalizedCrypto.toLowerCase())}`);
 }
 
 function initMap() {
