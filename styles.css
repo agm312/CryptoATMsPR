@@ -450,42 +450,118 @@ main {
 
 /* Cryptocurrency Cards */
 .crypto-grid {
-    display: block;
-    width: 100%;
-    padding: 24px;
+    padding: 2rem;
+}
+
+.crypto-description {
+    text-align: center;
+    color: #666;
+    margin-bottom: 2rem;
+}
+
+.crypto-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.crypto-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.crypto-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.crypto-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #FF385C;
 }
 
 .crypto-card h3 {
     font-size: 1.5rem;
-    margin-bottom: 8px;
-    color: var(--text-dark);
+    margin: 0.5rem 0;
+    color: #333;
 }
 
 .crypto-symbol {
-    color: var(--text-light);
-    font-weight: 500;
-    margin-bottom: 8px;
+    font-size: 1rem;
+    color: #666;
+    margin: 0.5rem 0;
 }
 
 .atm-count {
+    font-size: 1.1rem;
+    color: #444;
+    margin: 0.5rem 0 1rem;
+}
+
+.view-atms-btn {
+    background: #FF385C;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.view-atms-btn:hover {
+    background: #E6324F;
+}
+
+.crypto-atm-list {
+    padding: 2rem;
+}
+
+.crypto-header {
     text-align: center;
+    margin-bottom: 2rem;
+}
+
+.crypto-header h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.back-button {
+    background: #f5f5f5;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    color: #333;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.back-button:hover {
+    background: #e5e5e5;
+}
+
+.coin-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: #f0f0f0;
+    border-radius: 20px;
+    font-size: 0.9rem;
     color: #666;
-    margin: 24px 0;
-    font-size: 1.1em;
-}
-
-@media (max-width: 1200px) {
-    .neighborhood-cards,
-    .crypto-cards {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .neighborhoods-grid,
-    .crypto-grid {
-        padding: 16px;
-    }
+    margin: 0.25rem;
 }
 
 /* Keep the Bitcoin ATMs page styles separate */

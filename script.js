@@ -558,41 +558,80 @@ function loadNeighborhoodsContent() {
     `;
 }
 
+// Get cryptocurrency icon
+function getCryptoIcon(crypto) {
+    switch(crypto.toLowerCase()) {
+        case 'bitcoin':
+        case 'btc':
+            return 'fab fa-bitcoin';
+        case 'ethereum':
+        case 'eth':
+            return 'fab fa-ethereum';
+        default:
+            return 'fas fa-coins';
+    }
+}
+
+// Get standardized crypto name and symbol
+function getCryptoInfo(crypto) {
+    switch(crypto.toLowerCase()) {
+        case 'bitcoin':
+        case 'btc':
+            return { name: 'Bitcoin', symbol: 'BTC' };
+        case 'ethereum':
+        case 'eth':
+            return { name: 'Ethereum', symbol: 'ETH' };
+        default:
+            return { name: crypto, symbol: crypto.toUpperCase() };
+    }
+}
+
 // Load cryptocurrencies content
 function loadCryptocurrenciesContent() {
     const cryptoGrid = document.querySelector('.crypto-grid');
     if (!cryptoGrid) return;
 
     // Get unique cryptocurrencies and count ATMs
-    const cryptos = [...new Set(atmData.flatMap(atm => atm.coins))];
+    const cryptoMap = new Map();
     
+    atmData.forEach(atm => {
+        atm.coins.forEach(coin => {
+            const normalizedCoin = coin.toLowerCase();
+            const count = cryptoMap.get(normalizedCoin) || 0;
+            cryptoMap.set(normalizedCoin, count + 1);
+        });
+    });
+
+    // Convert to array and sort by count
+    const cryptoStats = Array.from(cryptoMap.entries())
+        .map(([coin, count]) => {
+            const info = getCryptoInfo(coin);
+            return {
+                name: info.name,
+                symbol: info.symbol,
+                count: count,
+                icon: getCryptoIcon(coin)
+            };
+        })
+        .sort((a, b) => b.count - a.count);
+
     cryptoGrid.innerHTML = `
         <h2>Supported Cryptocurrencies at Puerto Rico ATMs</h2>
+        <p class="crypto-description">Find ATMs supporting various cryptocurrencies across Puerto Rico</p>
         <div class="crypto-cards">
-            ${cryptos.map(crypto => {
-                const atmCount = atmData.filter(atm => 
-                    atm.coins.includes(crypto)
-                ).length;
-                return `
-                    <div class="crypto-card" onclick="showCryptoATMs('${crypto}')">
-                        <div class="crypto-icon">
-                            <i class="${getCryptoIcon(crypto)}"></i>
-                        </div>
-                        <h3>${crypto}</h3>
-                        <p>${atmCount} ATM${atmCount !== 1 ? 's' : ''}</p>
+            ${cryptoStats.map(crypto => `
+                <div class="crypto-card" onclick="showCryptoATMs('${crypto.name}')">
+                    <div class="crypto-icon">
+                        <i class="${crypto.icon}"></i>
                     </div>
-                `;
-            }).join('')}
+                    <h3>${crypto.name}</h3>
+                    <p class="crypto-symbol">${crypto.symbol}</p>
+                    <p class="atm-count">${crypto.count} ATM${crypto.count !== 1 ? 's' : ''}</p>
+                    <button class="view-atms-btn">View ATMs</button>
+                </div>
+            `).join('')}
         </div>
     `;
-}
-
-function getCryptoIcon(crypto) {
-    switch(crypto.toLowerCase()) {
-        case 'bitcoin': return 'fab fa-bitcoin';
-        case 'ethereum': return 'fab fa-ethereum';
-        default: return 'fas fa-coins';
-    }
 }
 
 function updateMarkers(searchTerm) {
@@ -849,28 +888,42 @@ function showNeighborhoodATMs(city) {
 
 function showCryptoATMs(cryptocurrency) {
     const contentArea = document.querySelector('.content-grid');
+    if (!contentArea) return;
+
+    // Normalize the cryptocurrency name for case-insensitive comparison
+    const normalizedCrypto = cryptocurrency.toLowerCase();
+    
+    // Filter ATMs that support this cryptocurrency
     const filteredATMs = atmData.filter(atm => 
-        atm.coins.some(coin => coin.toLowerCase() === cryptocurrency.toLowerCase())
+        atm.coins.some(coin => coin.toLowerCase() === normalizedCrypto)
     );
 
+    // Hide other sections
+    document.querySelectorAll('.content-section').forEach(section => {
+        if (section) section.style.display = 'none';
+    });
+
+    // Update content
     contentArea.innerHTML = `
-        <div class="atm-list-container">
+        <div class="crypto-atm-list">
             <div class="crypto-header">
-                <h2>${cryptocurrency.toUpperCase()} ATMs in Puerto Rico</h2>
-                <p class="atm-count">Found ${filteredATMs.length} ATM${filteredATMs.length !== 1 ? 's' : ''} supporting ${cryptocurrency.toUpperCase()}</p>
-                <button onclick="window.location.href='/cryptocurrencies.html'" class="back-button">
+                <h2>${cryptocurrency} ATMs in Puerto Rico</h2>
+                <p class="atm-count">Found ${filteredATMs.length} ATM${filteredATMs.length !== 1 ? 's' : ''} supporting ${cryptocurrency}</p>
+                <button onclick="setFilter('cryptocurrencies')" class="back-button">
                     <i class="fas fa-arrow-left"></i> Back to Cryptocurrencies
                 </button>
             </div>
-            <div class="atm-list">
+            <div class="atm-grid">
                 ${filteredATMs.map(atm => `
-                    <article class="atm-card">
-                        <img src="${atm.image}" alt="${atm.name}">
+                    <article class="atm-card" onclick="showATMDetails(${atm.id})">
+                        <img src="${atm.image}" alt="${atm.name}" onerror="this.src='https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=300&h=200&fit=crop'">
                         <div class="atm-info">
+                            <h3>${atm.name}</h3>
                             <div class="operator">${atm.operator}</div>
                             <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(atm.address)}" 
                                class="address" 
-                               target="_blank">
+                               target="_blank"
+                               title="Get directions to this ATM">
                                 <i class="fas fa-map-marker-alt"></i>
                                 <span>${atm.address}</span>
                             </a>
@@ -878,6 +931,10 @@ function showCryptoATMs(cryptocurrency) {
                                 <i class="fas fa-phone"></i>
                                 <span>${atm.phone}</span>
                             </a>
+                            <div class="hours">
+                                <i class="fas fa-clock"></i>
+                                <span>${atm.hours}</span>
+                            </div>
                             <div class="coins">
                                 ${atm.coins.map(coin => `<span class="coin-badge">${coin}</span>`).join('')}
                             </div>
@@ -887,6 +944,9 @@ function showCryptoATMs(cryptocurrency) {
             </div>
         </div>
     `;
+
+    // Update URL to reflect the current cryptocurrency
+    window.history.pushState({}, '', `/?cryptocurrency=${encodeURIComponent(cryptocurrency.toLowerCase())}`);
 }
 
 function initMap() {
