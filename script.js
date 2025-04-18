@@ -465,14 +465,14 @@ let searchQuery = '';
 
 // Initialize the page when DOM content is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    setupEventListeners();
     initializeSearch();
+    setupEventListeners();
     
     // Check for query parameters
     const urlParams = new URLSearchParams(window.location.search);
     const coin = urlParams.get('coin');
     const city = urlParams.get('city');
-    const search = urlParams.get('search');
+    const searchTerm = urlParams.get('search') || '';
 
     // Handle different pages based on pathname
     const currentPath = window.location.pathname;
@@ -482,18 +482,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof google !== 'undefined') {
             initMap();
         }
-        updateATMList(search);
+        updateATMList(searchTerm);
     } else if (currentPath === '/neighborhoods' || currentPath === '/neighborhoods.html') {
         if (city) {
             showNeighborhoodATMs(decodeURIComponent(city));
         } else {
-            loadNeighborhoodsContent(search);
+            loadNeighborhoodsContent(searchTerm);
         }
     } else if (currentPath === '/cryptocurrencies' || currentPath === '/cryptocurrencies.html') {
         if (coin) {
             showCryptoATMs(decodeURIComponent(coin));
         } else {
-            loadCryptocurrenciesContent(search);
+            loadCryptocurrenciesContent(searchTerm);
         }
     }
 });
@@ -501,7 +501,11 @@ document.addEventListener('DOMContentLoaded', () => {
 // Initialize search functionality
 function initializeSearch() {
     const searchInput = document.querySelector('#searchInput');
-    if (!searchInput) return;
+    if (!searchInput) {
+        console.warn('Search input (#searchInput) not found on this page');
+        return;
+    }
+    console.log('Search input initialized');
 
     // Clear any existing value
     searchInput.value = '';
@@ -511,9 +515,12 @@ function initializeSearch() {
     const searchTerm = urlParams.get('search');
     if (searchTerm) {
         searchInput.value = decodeURIComponent(searchTerm);
+        handleSearch({ target: { value: searchInput.value } }); // Trigger initial search
     }
 
-    // Handle search input
+    // Remove existing listener to prevent duplicates
+    searchInput.removeEventListener('input', handleSearch);
+    // Add new listener
     searchInput.addEventListener('input', handleSearch);
 }
 
@@ -558,17 +565,12 @@ function setupEventListeners() {
         });
     });
 
-    // Handle search input
-    const searchInput = document.querySelector('#searchInput');
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase().trim();
-            updateATMList(searchTerm);
-            if (typeof map !== 'undefined') {
-                updateMarkers(searchTerm);
-            }
-        });
-    }
+    // Handle browser back/forward buttons
+    window.addEventListener('popstate', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchTerm = urlParams.get('search') || '';
+        handleSearch({ target: { value: searchTerm } });
+    });
 }
 
 // Update URL and navigate
