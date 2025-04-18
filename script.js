@@ -466,9 +466,33 @@ let searchQuery = '';
 // Initialize the page when DOM content is loaded
 document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
-    handleRoute();
-    if (typeof google !== 'undefined') {
-        initMap();
+    
+    // Check for query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const coin = urlParams.get('coin');
+    const city = urlParams.get('city');
+
+    // Handle different pages based on pathname
+    const currentPath = window.location.pathname;
+    
+    if (currentPath === '/' || currentPath === '/index.html') {
+        // Home page - initialize map and ATM list
+        if (typeof google !== 'undefined') {
+            initMap();
+        }
+        updateATMList();
+    } else if (currentPath === '/neighborhoods' || currentPath === '/neighborhoods.html') {
+        if (city) {
+            showNeighborhoodATMs(decodeURIComponent(city));
+        } else {
+            loadNeighborhoodsContent();
+        }
+    } else if (currentPath === '/cryptocurrencies' || currentPath === '/cryptocurrencies.html') {
+        if (coin) {
+            showCryptoATMs(decodeURIComponent(coin));
+        } else {
+            loadCryptocurrenciesContent();
+        }
     }
 });
 
@@ -494,68 +518,9 @@ function setupEventListeners() {
             }
         });
     }
-
-    // Handle browser back/forward buttons
-    window.addEventListener('popstate', () => {
-        handleRoute();
-    });
 }
 
-// Handle routing based on current URL
-function handleRoute() {
-    // Only run tab logic if on a tabbed page
-    const currentPath = window.location.pathname;
-    const tabbedPages = ['/', '/index.html', '/neighborhoods.html', '/cryptocurrencies.html'];
-    
-    if (!tabbedPages.includes(currentPath)) {
-        return; // Skip for "About" or "Add ATM" pages
-    }
-
-    // Handle page-specific content
-    const mapContainer = document.querySelector('.map-container');
-    const neighborhoodsGrid = document.querySelector('.neighborhoods-grid');
-    const cryptoGrid = document.querySelector('.crypto-grid');
-    const contentGrid = document.querySelector('.content-grid');
-
-    // Safely hide elements if they exist
-    if (mapContainer) mapContainer.style.display = 'none';
-    if (neighborhoodsGrid) neighborhoodsGrid.style.display = 'none';
-    if (cryptoGrid) cryptoGrid.style.display = 'none';
-    if (contentGrid) contentGrid.style.display = 'block';
-
-    // Remove active class from all filter buttons
-    document.querySelectorAll('.filter-button').forEach(button => {
-        if (button) button.classList.remove('active');
-    });
-
-    // Show appropriate content based on current page
-    if (currentPath === '/' || currentPath === '/index.html') {
-        if (mapContainer) {
-            mapContainer.style.display = 'block';
-            const allButton = document.querySelector('[data-filter="all"]');
-            if (allButton) allButton.classList.add('active');
-            if (typeof google !== 'undefined' && typeof initMap === 'function') {
-                initMap();
-            }
-        }
-    } else if (currentPath.includes('neighborhoods.html')) {
-        if (neighborhoodsGrid) {
-            neighborhoodsGrid.style.display = 'grid';
-            const neighborhoodsButton = document.querySelector('[data-filter="neighborhoods"]');
-            if (neighborhoodsButton) neighborhoodsButton.classList.add('active');
-            loadNeighborhoodsContent();
-        }
-    } else if (currentPath.includes('cryptocurrencies.html')) {
-        if (cryptoGrid) {
-            cryptoGrid.style.display = 'grid';
-            const cryptoButton = document.querySelector('[data-filter="cryptocurrencies"]');
-            if (cryptoButton) cryptoButton.classList.add('active');
-            loadCryptocurrenciesContent();
-        }
-    }
-}
-
-// Update URL and trigger route handling
+// Update URL and navigate
 function setFilter(filter) {
     let newPath = '/';
     switch (filter) {
@@ -579,19 +544,21 @@ function loadNeighborhoodsContent() {
 
     // Get unique cities and count ATMs
     const cities = [...new Set(atmData.map(atm => atm.city))];
+    const cityATMs = {};
+    
+    cities.forEach(city => {
+        cityATMs[city] = atmData.filter(atm => atm.city === city).length;
+    });
     
     neighborhoodsGrid.innerHTML = `
         <h2>Bitcoin ATMs by Neighborhood in Puerto Rico</h2>
         <div class="neighborhood-cards">
-            ${cities.map(city => {
-                const atmCount = atmData.filter(atm => atm.city === city).length;
-                return `
-                    <div class="neighborhood-card" onclick="showNeighborhoodATMs('${city}')">
-                        <h3>${city}</h3>
-                        <p>${atmCount} ATM${atmCount !== 1 ? 's' : ''}</p>
-                    </div>
-                `;
-            }).join('')}
+            ${cities.map(city => `
+                <div class="neighborhood-card" onclick="window.location.href='/neighborhoods?city=${encodeURIComponent(city)}'">
+                    <h3>${city}</h3>
+                    <p>${cityATMs[city]} ATM${cityATMs[city] !== 1 ? 's' : ''}</p>
+                </div>
+            `).join('')}
         </div>
     `;
 }
@@ -650,18 +617,17 @@ function getCryptoIcon(crypto) {
     return iconMap[crypto] || iconMap.default;
 }
 
-// Load cryptocurrencies content
+// Load cryptocurrencies content with accurate counts
 function loadCryptocurrenciesContent() {
     const cryptoGrid = document.querySelector('.crypto-grid');
     if (!cryptoGrid) return;
 
-    // Get unique cryptocurrencies and their actual counts from ATM data
+    // Get unique cryptocurrencies and their actual counts
     const cryptoCounts = {};
     atmData.forEach(atm => {
         atm.coins.forEach(coin => {
             const normalizedCoin = normalizeCryptoName(coin);
             if (!cryptoCounts[normalizedCoin]) {
-                // Count unique ATMs for this cryptocurrency
                 cryptoCounts[normalizedCoin] = atmData.filter(a => 
                     a.coins.some(c => normalizeCryptoName(c) === normalizedCoin)
                 ).length;
@@ -669,7 +635,6 @@ function loadCryptocurrenciesContent() {
         });
     });
 
-    // Define supported cryptocurrencies with their details
     const supportedCryptos = [
         { name: 'Bitcoin', symbol: 'BTC', icon: 'fab fa-bitcoin' },
         { name: 'Ethereum', symbol: 'ETH', icon: 'fab fa-ethereum' },
@@ -688,7 +653,7 @@ function loadCryptocurrenciesContent() {
             ${supportedCryptos.map(crypto => {
                 const count = cryptoCounts[crypto.name] || 0;
                 return `
-                    <div class="crypto-card" onclick="showCryptoATMs('${crypto.name}')">
+                    <div class="crypto-card" onclick="window.location.href='/cryptocurrencies?coin=${encodeURIComponent(crypto.name)}'">
                         <div class="crypto-icon">
                             <i class="${crypto.icon}"></i>
                         </div>
@@ -886,15 +851,11 @@ function showNeighborhoodATMs(city) {
     const contentArea = document.querySelector('.content-grid');
     if (!contentArea) return;
     
-    // Normalize the city name for case-insensitive comparison
     const normalizedCity = city.toLowerCase().trim();
-    
-    // Filter ATMs for the selected city
     const filteredATMs = atmData.filter(atm => 
         atm.city.toLowerCase().trim() === normalizedCity
     );
 
-    // Show the filtered ATMs
     contentArea.innerHTML = `
         <div class="atm-list-container">
             <div class="neighborhood-header">
@@ -949,18 +910,11 @@ function showCryptoATMs(cryptocurrency) {
     const contentArea = document.querySelector('.content-grid');
     if (!contentArea) return;
 
-    // Normalize the cryptocurrency name
     const normalizedCrypto = normalizeCryptoName(cryptocurrency);
-    
-    // Filter ATMs that support this cryptocurrency
     const filteredATMs = atmData.filter(atm => 
-        atm.coins.some(coin => {
-            const normalizedCoin = normalizeCryptoName(coin);
-            return normalizedCoin === normalizedCrypto;
-        })
+        atm.coins.some(coin => normalizeCryptoName(coin) === normalizedCrypto)
     );
 
-    // Update content
     contentArea.innerHTML = `
         <div class="crypto-atm-list">
             <div class="crypto-header">
@@ -1009,10 +963,6 @@ function showCryptoATMs(cryptocurrency) {
             `}
         </div>
     `;
-
-    // Update URL for SEO
-    const seoCryptoName = normalizedCrypto.toLowerCase().replace(/\s+/g, '-');
-    window.history.pushState({}, '', `/cryptocurrencies/${seoCryptoName}/atms/pr`);
 }
 
 function initMap() {
