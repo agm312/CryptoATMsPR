@@ -1132,6 +1132,7 @@ function showCryptoATMs(cryptocurrency) {
 function loadGoogleMaps() {
     // Check if Google Maps is already loaded
     if (typeof google !== 'undefined' && typeof google.maps !== 'undefined') {
+        console.log('Google Maps already loaded, initializing map...');
         initMap();
         return;
     }
@@ -1142,6 +1143,9 @@ function loadGoogleMaps() {
         console.error('Map container not found');
         return;
     }
+
+    // Define your Google Maps API key
+    const GOOGLE_MAPS_API_KEY = 'AIzaSyDHlGwWjfMJXEtC4Zj6YFYNZtQKnAiYL8Y'; // Replace with your actual API key
 
     // Create a script element for Google Maps
     const script = document.createElement('script');
@@ -1155,56 +1159,57 @@ function loadGoogleMaps() {
         displayMapError('Failed to load Google Maps. Please check your internet connection and try again.');
     };
 
+    // Add success handler
+    window.initMap = function() {
+        try {
+            console.log('Google Maps script loaded, initializing map...');
+            const mapElement = document.getElementById('map');
+            if (!mapElement) {
+                throw new Error('Map element not found after script load');
+            }
+
+            // Create the map with error boundaries
+            map = new google.maps.Map(mapElement, {
+                center: { lat: 18.4655, lng: -66.1057 }, // Center on Puerto Rico
+                zoom: 10,
+                styles: [
+                    {
+                        featureType: "poi",
+                        elementType: "labels",
+                        stylers: [{ visibility: "off" }]
+                    }
+                ],
+                mapTypeControl: true,
+                streetViewControl: true,
+                fullscreenControl: true,
+                gestureHandling: 'cooperative'
+            });
+
+            // Initialize markers and list
+            updateMarkers();
+            
+            // Add success listener
+            google.maps.event.addListenerOnce(map, 'idle', () => {
+                console.log('Map loaded and rendered successfully');
+            });
+
+        } catch (error) {
+            console.error('Error in initMap:', error);
+            displayMapError('Failed to initialize the map. Please try refreshing the page.');
+        }
+    };
+
+    // Add error handler for the API
+    window.gm_authFailure = function() {
+        console.error('Google Maps authentication failed');
+        displayMapError('Google Maps authentication failed. Please check the API key configuration.');
+    };
+
     // Add the script to the document
     document.head.appendChild(script);
 }
 
-// Initialize the map
-function initMap() {
-    const mapElement = document.getElementById('map');
-    if (!mapElement) {
-        console.error('Map element not found');
-        return;
-    }
-
-    try {
-        // Create the map with error boundaries
-        map = new google.maps.Map(mapElement, {
-            center: { lat: 18.4655, lng: -66.1057 }, // Center on Puerto Rico
-            zoom: 10,
-            styles: [
-                {
-                    featureType: "poi",
-                    elementType: "labels",
-                    stylers: [{ visibility: "off" }]
-                }
-            ],
-            mapTypeControl: true,
-            streetViewControl: true,
-            fullscreenControl: true,
-            gestureHandling: 'cooperative'
-        });
-
-        // Initialize markers and list
-        updateMarkers();
-        
-        // Add error boundaries
-        google.maps.event.addListenerOnce(map, 'idle', () => {
-            console.log('Map loaded successfully');
-        });
-
-        google.maps.event.addListenerOnce(map, 'error', () => {
-            console.error('Error occurred while loading map');
-            displayMapError('An error occurred while loading the map. Please try refreshing the page.');
-        });
-
-    } catch (error) {
-        console.error('Error initializing map:', error);
-        displayMapError('Failed to initialize the map. Please try refreshing the page.');
-    }
-}
-
-// Display map error message
+// Display map error message with more details
 function displayMapError(message) {
     const mapElement = document.getElementById('map');
     if (mapElement) {
@@ -1212,6 +1217,14 @@ function displayMapError(message) {
             <div class="map-error">
                 <h2>Map Loading Error</h2>
                 <p>${message}</p>
+                <div class="error-details">
+                    <p>If the problem persists:</p>
+                    <ul>
+                        <li>Check your internet connection</li>
+                        <li>Try disabling ad blockers</li>
+                        <li>Clear your browser cache</li>
+                    </ul>
+                </div>
                 <div class="error-actions">
                     <button onclick="retryLoadMap()" class="retry-btn">
                         <i class="fas fa-sync-alt"></i> Retry Loading Map
@@ -1222,15 +1235,22 @@ function displayMapError(message) {
                 </div>
             </div>
         `;
+        console.error('Map error displayed:', message);
     }
 }
 
-// Retry loading the map
+// Retry loading the map with loading indicator
 function retryLoadMap() {
     const mapElement = document.getElementById('map');
     if (mapElement) {
-        mapElement.innerHTML = '<div class="loading">Loading map...</div>';
-        loadGoogleMaps();
+        mapElement.innerHTML = `
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>Loading map...</p>
+            </div>
+        `;
+        console.log('Retrying map load...');
+        setTimeout(() => loadGoogleMaps(), 1000); // Add slight delay before retry
     }
 }
 
