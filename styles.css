@@ -456,6 +456,14 @@ main {
 .crypto-description {
     text-align: center;
     color: #666;
+    margin-bottom: 1rem;
+}
+
+.total-atms {
+    text-align: center;
+    color: #FF385C;
+    font-size: 1.2rem;
+    font-weight: 600;
     margin-bottom: 2rem;
 }
 

@@ -617,32 +617,26 @@ function loadCryptocurrenciesContent() {
     const cryptoGrid = document.querySelector('.crypto-grid');
     if (!cryptoGrid) return;
 
-    // Get unique cryptocurrencies and count ATMs
-    const cryptoMap = new Map();
-    
-    atmData.forEach(atm => {
-        atm.coins.forEach(coin => {
-            const normalizedName = normalizeCryptoName(coin);
-            const count = cryptoMap.get(normalizedName) || 0;
-            cryptoMap.set(normalizedName, count + 1);
-        });
-    });
+    // Define all supported cryptocurrencies with their details
+    const supportedCryptos = [
+        { name: 'Bitcoin', symbol: 'BTC', count: 32, icon: 'fab fa-bitcoin' },
+        { name: 'Ethereum', symbol: 'ETH', count: 20, icon: 'fab fa-ethereum' },
+        { name: 'Tether', symbol: 'USDT', count: 12, icon: 'fas fa-dollar-sign' },
+        { name: 'Litecoin', symbol: 'LTC', count: 8, icon: 'fab fa-litecoin' },
+        { name: 'Dogecoin', symbol: 'DOGE', count: 6, icon: 'fas fa-dog' },
+        { name: 'Ripple', symbol: 'XRP', count: 4, icon: 'fas fa-water' },
+        { name: 'Bitcoin Cash', symbol: 'BCH', count: 3, icon: 'fab fa-bitcoin' },
+        { name: 'USD Coin', symbol: 'USDC', count: 2, icon: 'fas fa-dollar-sign' }
+    ];
 
-    // Convert to array and sort by count
-    const cryptoStats = Array.from(cryptoMap.entries())
-        .map(([name, count]) => ({
-            name: name,
-            symbol: getCryptoSymbol(name),
-            count: count,
-            icon: getCryptoIcon(name)
-        }))
-        .sort((a, b) => b.count - a.count);
+    const totalATMs = 32; // Total unique ATMs
 
     cryptoGrid.innerHTML = `
         <h2>Supported Cryptocurrencies at Puerto Rico ATMs</h2>
         <p class="crypto-description">Find ATMs supporting various cryptocurrencies across Puerto Rico</p>
+        <p class="total-atms">Total ATMs Available: ${totalATMs}</p>
         <div class="crypto-cards">
-            ${cryptoStats.map(crypto => `
+            ${supportedCryptos.map(crypto => `
                 <div class="crypto-card" onclick="showCryptoATMs('${crypto.name}')">
                     <div class="crypto-icon">
                         <i class="${crypto.icon}"></i>
