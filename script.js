@@ -560,16 +560,16 @@ function setFilter(filter) {
     let newPath = '/';
     switch (filter) {
         case 'neighborhoods':
-            newPath = '/neighborhoods.html';
+            newPath = '/neighborhoods';
             break;
         case 'cryptocurrencies':
-            newPath = '/cryptocurrencies.html';
+            newPath = '/cryptocurrencies';
             break;
         case 'all':
             newPath = '/';
             break;
     }
-    window.location.href = newPath; // Use full navigation instead of pushState
+    window.location.href = newPath;
 }
 
 // Load neighborhoods content
@@ -655,45 +655,50 @@ function loadCryptocurrenciesContent() {
     const cryptoGrid = document.querySelector('.crypto-grid');
     if (!cryptoGrid) return;
 
-    // Get actual counts from ATM data
+    // Get unique cryptocurrencies and their actual counts from ATM data
     const cryptoCounts = {};
     atmData.forEach(atm => {
         atm.coins.forEach(coin => {
             const normalizedCoin = normalizeCryptoName(coin);
-            cryptoCounts[normalizedCoin] = (cryptoCounts[normalizedCoin] || 0) + 1;
+            if (!cryptoCounts[normalizedCoin]) {
+                // Count unique ATMs for this cryptocurrency
+                cryptoCounts[normalizedCoin] = atmData.filter(a => 
+                    a.coins.some(c => normalizeCryptoName(c) === normalizedCoin)
+                ).length;
+            }
         });
     });
 
-    // Define all supported cryptocurrencies with their details
+    // Define supported cryptocurrencies with their details
     const supportedCryptos = [
-        { name: 'Bitcoin', symbol: 'BTC', count: 32, icon: 'fab fa-bitcoin' },
-        { name: 'Ethereum', symbol: 'ETH', count: 20, icon: 'fab fa-ethereum' },
-        { name: 'Tether', symbol: 'USDT', count: 12, icon: 'fas fa-dollar-sign' },
-        { name: 'Litecoin', symbol: 'LTC', count: 8, icon: 'fas fa-litecoin-sign' },
-        { name: 'Dogecoin', symbol: 'DOGE', count: 6, icon: 'fas fa-dog' },
-        { name: 'Ripple', symbol: 'XRP', count: 4, icon: 'fas fa-water' },
-        { name: 'Bitcoin Cash', symbol: 'BCH', count: 3, icon: 'fab fa-bitcoin' },
-        { name: 'USD Coin', symbol: 'USDC', count: 2, icon: 'fas fa-dollar-sign' }
+        { name: 'Bitcoin', symbol: 'BTC', icon: 'fab fa-bitcoin' },
+        { name: 'Ethereum', symbol: 'ETH', icon: 'fab fa-ethereum' },
+        { name: 'Tether', symbol: 'USDT', icon: 'fas fa-dollar-sign' },
+        { name: 'Litecoin', symbol: 'LTC', icon: 'fas fa-litecoin-sign' },
+        { name: 'Dogecoin', symbol: 'DOGE', icon: 'fas fa-dog' },
+        { name: 'Ripple', symbol: 'XRP', icon: 'fas fa-water' },
+        { name: 'Bitcoin Cash', symbol: 'BCH', icon: 'fab fa-bitcoin' },
+        { name: 'USD Coin', symbol: 'USDC', icon: 'fas fa-dollar-sign' }
     ];
-
-    const totalATMs = 32; // Total unique ATMs
 
     cryptoGrid.innerHTML = `
         <h2>Supported Cryptocurrencies at Puerto Rico ATMs</h2>
         <p class="crypto-description">Find ATMs supporting various cryptocurrencies across Puerto Rico</p>
-        <p class="total-atms">Total ATMs Available: ${totalATMs}</p>
         <div class="crypto-cards">
-            ${supportedCryptos.map(crypto => `
-                <div class="crypto-card" onclick="showCryptoATMs('${crypto.name}')">
-                    <div class="crypto-icon">
-                        <i class="${crypto.icon}"></i>
+            ${supportedCryptos.map(crypto => {
+                const count = cryptoCounts[crypto.name] || 0;
+                return `
+                    <div class="crypto-card" onclick="showCryptoATMs('${crypto.name}')">
+                        <div class="crypto-icon">
+                            <i class="${crypto.icon}"></i>
+                        </div>
+                        <h3>${crypto.name}</h3>
+                        <p class="crypto-symbol">${crypto.symbol}</p>
+                        <p class="atm-count">${count} ATM${count !== 1 ? 's' : ''}</p>
+                        <button class="view-atms-btn">View ATMs</button>
                     </div>
-                    <h3>${crypto.name}</h3>
-                    <p class="crypto-symbol">${crypto.symbol}</p>
-                    <p class="atm-count">${crypto.count} ATM${crypto.count !== 1 ? 's' : ''}</p>
-                    <button class="view-atms-btn">View ATMs</button>
-                </div>
-            `).join('')}
+                `;
+            }).join('')}
         </div>
     `;
 }
@@ -895,7 +900,7 @@ function showNeighborhoodATMs(city) {
             <div class="neighborhood-header">
                 <h2>Bitcoin ATMs in ${city}, Puerto Rico</h2>
                 <p class="atm-count">Found ${filteredATMs.length} Bitcoin ATM${filteredATMs.length !== 1 ? 's' : ''} in ${city}</p>
-                <a href="/neighborhoods.html" class="back-button">
+                <a href="/neighborhoods" class="back-button">
                     <i class="fas fa-arrow-left"></i> Back to Neighborhoods
                 </a>
             </div>
@@ -961,7 +966,7 @@ function showCryptoATMs(cryptocurrency) {
             <div class="crypto-header">
                 <h2>${normalizedCrypto} ATMs in Puerto Rico</h2>
                 <p class="atm-count">Found ${filteredATMs.length} ATM${filteredATMs.length !== 1 ? 's' : ''} supporting ${normalizedCrypto}</p>
-                <a href="/cryptocurrencies.html" class="back-button">
+                <a href="/cryptocurrencies" class="back-button">
                     <i class="fas fa-arrow-left"></i> Back to Cryptocurrencies
                 </a>
             </div>
@@ -1004,6 +1009,10 @@ function showCryptoATMs(cryptocurrency) {
             `}
         </div>
     `;
+
+    // Update URL for SEO
+    const seoCryptoName = normalizedCrypto.toLowerCase().replace(/\s+/g, '-');
+    window.history.pushState({}, '', `/cryptocurrencies/${seoCryptoName}/atms/pr`);
 }
 
 function initMap() {
