@@ -466,11 +466,13 @@ let searchQuery = '';
 // Initialize the page when DOM content is loaded
 document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
+    initializeSearch();
     
     // Check for query parameters
     const urlParams = new URLSearchParams(window.location.search);
     const coin = urlParams.get('coin');
     const city = urlParams.get('city');
+    const search = urlParams.get('search');
 
     // Handle different pages based on pathname
     const currentPath = window.location.pathname;
@@ -480,21 +482,70 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof google !== 'undefined') {
             initMap();
         }
-        updateATMList();
+        updateATMList(search);
     } else if (currentPath === '/neighborhoods' || currentPath === '/neighborhoods.html') {
         if (city) {
             showNeighborhoodATMs(decodeURIComponent(city));
         } else {
-            loadNeighborhoodsContent();
+            loadNeighborhoodsContent(search);
         }
     } else if (currentPath === '/cryptocurrencies' || currentPath === '/cryptocurrencies.html') {
         if (coin) {
             showCryptoATMs(decodeURIComponent(coin));
         } else {
-            loadCryptocurrenciesContent();
+            loadCryptocurrenciesContent(search);
         }
     }
 });
+
+// Initialize search functionality
+function initializeSearch() {
+    const searchInput = document.querySelector('#searchInput');
+    if (!searchInput) return;
+
+    // Clear any existing value
+    searchInput.value = '';
+
+    // Get search term from URL if exists
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchTerm = urlParams.get('search');
+    if (searchTerm) {
+        searchInput.value = decodeURIComponent(searchTerm);
+    }
+
+    // Handle search input
+    searchInput.addEventListener('input', handleSearch);
+}
+
+// Handle search across all pages
+function handleSearch(event) {
+    const searchTerm = event.target.value.toLowerCase().trim();
+    const currentPath = window.location.pathname;
+
+    // Update URL with search term
+    const urlParams = new URLSearchParams(window.location.search);
+    if (searchTerm) {
+        urlParams.set('search', searchTerm);
+    } else {
+        urlParams.delete('search');
+    }
+    
+    // Update URL without page reload
+    const newUrl = `${window.location.pathname}${urlParams.toString() ? '?' + urlParams.toString() : ''}`;
+    window.history.replaceState({}, '', newUrl);
+
+    // Handle search based on current page
+    if (currentPath === '/' || currentPath === '/index.html') {
+        updateATMList(searchTerm);
+        if (typeof map !== 'undefined') {
+            updateMarkers(searchTerm);
+        }
+    } else if (currentPath === '/neighborhoods' || currentPath === '/neighborhoods.html') {
+        loadNeighborhoodsContent(searchTerm);
+    } else if (currentPath === '/cryptocurrencies' || currentPath === '/cryptocurrencies.html') {
+        loadCryptocurrenciesContent(searchTerm);
+    }
+}
 
 // Set up event listeners for navigation and search
 function setupEventListeners() {
@@ -538,19 +589,27 @@ function setFilter(filter) {
 }
 
 // Load neighborhoods content
-function loadNeighborhoodsContent() {
+function loadNeighborhoodsContent(searchTerm = '') {
     const neighborhoodsGrid = document.querySelector('.neighborhoods-grid');
     if (!neighborhoodsGrid) return;
 
-    // Get unique cities and count ATMs
-    const cities = [...new Set(atmData.map(atm => atm.city))];
+    // Get cities that match the search term
+    const cities = [...new Set(atmData
+        .filter(atm => 
+            !searchTerm || 
+            atm.city.toLowerCase().includes(searchTerm) ||
+            atm.address.toLowerCase().includes(searchTerm) ||
+            atm.operator.toLowerCase().includes(searchTerm)
+        )
+        .map(atm => atm.city)
+    )];
+
     const cityATMs = {};
-    
     cities.forEach(city => {
         cityATMs[city] = atmData.filter(atm => atm.city === city).length;
     });
-    
-    neighborhoodsGrid.innerHTML = `
+
+    neighborhoodsGrid.innerHTML = cities.length > 0 ? `
         <h2>Bitcoin ATMs by Neighborhood in Puerto Rico</h2>
         <div class="neighborhood-cards">
             ${cities.map(city => `
@@ -559,6 +618,12 @@ function loadNeighborhoodsContent() {
                     <p>${cityATMs[city]} ATM${cityATMs[city] !== 1 ? 's' : ''}</p>
                 </div>
             `).join('')}
+        </div>
+    ` : `
+        <div class="empty-state">
+            <i class="fas fa-search"></i>
+            <h3>No Neighborhoods Found</h3>
+            <p>No neighborhoods match your search criteria.</p>
         </div>
     `;
 }
@@ -618,11 +683,11 @@ function getCryptoIcon(crypto) {
 }
 
 // Load cryptocurrencies content with accurate counts
-function loadCryptocurrenciesContent() {
+function loadCryptocurrenciesContent(searchTerm = '') {
     const cryptoGrid = document.querySelector('.crypto-grid');
     if (!cryptoGrid) return;
 
-    // Get unique cryptocurrencies and their actual counts
+    // Get unique cryptocurrencies and their counts
     const cryptoCounts = {};
     atmData.forEach(atm => {
         atm.coins.forEach(coin => {
@@ -635,22 +700,32 @@ function loadCryptocurrenciesContent() {
         });
     });
 
+    // Define supported cryptocurrencies with search matching
     const supportedCryptos = [
-        { name: 'Bitcoin', symbol: 'BTC', icon: 'fab fa-bitcoin' },
-        { name: 'Ethereum', symbol: 'ETH', icon: 'fab fa-ethereum' },
-        { name: 'Tether', symbol: 'USDT', icon: 'fas fa-dollar-sign' },
-        { name: 'Litecoin', symbol: 'LTC', icon: 'fas fa-litecoin-sign' },
-        { name: 'Dogecoin', symbol: 'DOGE', icon: 'fas fa-dog' },
-        { name: 'Ripple', symbol: 'XRP', icon: 'fas fa-water' },
-        { name: 'Bitcoin Cash', symbol: 'BCH', icon: 'fab fa-bitcoin' },
-        { name: 'USD Coin', symbol: 'USDC', icon: 'fas fa-dollar-sign' }
+        { name: 'Bitcoin', symbol: 'BTC', icon: 'fab fa-bitcoin', searchTerms: ['bitcoin', 'btc'] },
+        { name: 'Ethereum', symbol: 'ETH', icon: 'fab fa-ethereum', searchTerms: ['ethereum', 'eth'] },
+        { name: 'Tether', symbol: 'USDT', icon: 'fas fa-dollar-sign', searchTerms: ['tether', 'usdt'] },
+        { name: 'Litecoin', symbol: 'LTC', icon: 'fas fa-litecoin-sign', searchTerms: ['litecoin', 'ltc'] },
+        { name: 'Dogecoin', symbol: 'DOGE', icon: 'fas fa-dog', searchTerms: ['dogecoin', 'doge'] },
+        { name: 'Ripple', symbol: 'XRP', icon: 'fas fa-water', searchTerms: ['ripple', 'xrp'] },
+        { name: 'Bitcoin Cash', symbol: 'BCH', icon: 'fab fa-bitcoin', searchTerms: ['bitcoin cash', 'bch'] },
+        { name: 'USD Coin', symbol: 'USDC', icon: 'fas fa-dollar-sign', searchTerms: ['usd coin', 'usdc'] }
     ];
 
-    cryptoGrid.innerHTML = `
+    // Filter cryptocurrencies based on search term
+    const filteredCryptos = searchTerm 
+        ? supportedCryptos.filter(crypto => 
+            crypto.searchTerms.some(term => term.includes(searchTerm)) ||
+            crypto.name.toLowerCase().includes(searchTerm) ||
+            crypto.symbol.toLowerCase().includes(searchTerm)
+        )
+        : supportedCryptos;
+
+    cryptoGrid.innerHTML = filteredCryptos.length > 0 ? `
         <h2>Supported Cryptocurrencies at Puerto Rico ATMs</h2>
         <p class="crypto-description">Find ATMs supporting various cryptocurrencies across Puerto Rico</p>
         <div class="crypto-cards">
-            ${supportedCryptos.map(crypto => {
+            ${filteredCryptos.map(crypto => {
                 const count = cryptoCounts[crypto.name] || 0;
                 return `
                     <div class="crypto-card" onclick="window.location.href='/cryptocurrencies?coin=${encodeURIComponent(crypto.name)}'">
@@ -664,6 +739,12 @@ function loadCryptocurrenciesContent() {
                     </div>
                 `;
             }).join('')}
+        </div>
+    ` : `
+        <div class="empty-state">
+            <i class="fas fa-search"></i>
+            <h3>No Cryptocurrencies Found</h3>
+            <p>No cryptocurrencies match your search criteria.</p>
         </div>
     `;
 }
