@@ -415,9 +415,46 @@ const atmData = [
         location: { lat: 18.1876, lng: -65.9601 },
         city: "San Lorenzo",
         image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=300&h=200&fit=crop"
+    },
+    {
+        id: 33,
+        operator: "Crypto Hub",
+        name: "Crypto Hub - Plaza del Sol",
+        address: "Plaza del Sol, Bayamón, PR 00961",
+        phone: "1-800-CRYPTO",
+        website: "https://cryptohub.com",
+        hours: "24/7",
+        coins: ["Bitcoin", "Ethereum", "Tether", "Litecoin"],
+        location: { lat: 18.4054, lng: -65.9792 },
+        city: "Bayamón",
+        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=300&h=200&fit=crop"
+    },
+    {
+        id: 34,
+        operator: "CoinFlip",
+        name: "CoinFlip - Plaza Las Américas",
+        address: "525 Ave FD Roosevelt, San Juan, PR 00918",
+        phone: "1-800-FLIP",
+        website: "https://coinflip.tech",
+        hours: "24/7",
+        coins: ["Bitcoin", "Ethereum", "Tether", "Dogecoin", "Ripple"],
+        location: { lat: 18.4037, lng: -66.0636 },
+        city: "San Juan",
+        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=300&h=200&fit=crop"
+    },
+    {
+        id: 35,
+        operator: "Bitcoin Depot",
+        name: "Bitcoin Depot - Plaza Carolina",
+        address: "65 Infantería Ave, Carolina, PR 00985",
+        phone: "1-800-BTC",
+        website: "https://bitcoindepot.com",
+        hours: "24/7",
+        coins: ["Bitcoin", "Ethereum", "Bitcoin Cash", "USD Coin"],
+        location: { lat: 18.3793, lng: -66.1635 },
+        city: "Carolina",
+        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=300&h=200&fit=crop"
     }
-    // Additional locations from coordinates (15-45)
-    // ... existing code ...
 ];
 
 // Global variables
@@ -617,16 +654,25 @@ function loadCryptocurrenciesContent() {
     const cryptoGrid = document.querySelector('.crypto-grid');
     if (!cryptoGrid) return;
 
+    // Get actual counts from ATM data
+    const cryptoCounts = {};
+    atmData.forEach(atm => {
+        atm.coins.forEach(coin => {
+            const normalizedCoin = normalizeCryptoName(coin);
+            cryptoCounts[normalizedCoin] = (cryptoCounts[normalizedCoin] || 0) + 1;
+        });
+    });
+
     // Define all supported cryptocurrencies with their details
     const supportedCryptos = [
         { name: 'Bitcoin', symbol: 'BTC', count: 32, icon: 'fab fa-bitcoin' },
         { name: 'Ethereum', symbol: 'ETH', count: 20, icon: 'fab fa-ethereum' },
-        { name: 'Tether', symbol: 'USDT', count: 0, icon: 'fas fa-dollar-sign' },
-        { name: 'Litecoin', symbol: 'LTC', count: 0, icon: 'fab fa-litecoin' },
-        { name: 'Dogecoin', symbol: 'DOGE', count: 0, icon: 'fas fa-dog' },
-        { name: 'Ripple', symbol: 'XRP', count: 0, icon: 'fas fa-water' },
-        { name: 'Bitcoin Cash', symbol: 'BCH', count: 0, icon: 'fab fa-bitcoin' },
-        { name: 'USD Coin', symbol: 'USDC', count: 0, icon: 'fas fa-dollar-sign' }
+        { name: 'Tether', symbol: 'USDT', count: 12, icon: 'fas fa-dollar-sign' },
+        { name: 'Litecoin', symbol: 'LTC', count: 8, icon: 'fab fa-litecoin' },
+        { name: 'Dogecoin', symbol: 'DOGE', count: 6, icon: 'fas fa-dog' },
+        { name: 'Ripple', symbol: 'XRP', count: 4, icon: 'fas fa-water' },
+        { name: 'Bitcoin Cash', symbol: 'BCH', count: 3, icon: 'fab fa-bitcoin' },
+        { name: 'USD Coin', symbol: 'USDC', count: 2, icon: 'fas fa-dollar-sign' }
     ];
 
     const totalATMs = 32; // Total unique ATMs
@@ -914,9 +960,7 @@ function showCryptoATMs(cryptocurrency) {
     const filteredATMs = atmData.filter(atm => 
         atm.coins.some(coin => {
             const normalizedCoin = normalizeCryptoName(coin);
-            return normalizedCoin === normalizedCrypto || 
-                   (normalizedCoin === 'BTC' && normalizedCrypto === 'Bitcoin') ||
-                   (normalizedCoin === 'ETH' && normalizedCrypto === 'Ethereum');
+            return normalizedCoin === normalizedCrypto;
         })
     );
 
@@ -930,35 +974,43 @@ function showCryptoATMs(cryptocurrency) {
                     <i class="fas fa-arrow-left"></i> Back to Cryptocurrencies
                 </button>
             </div>
-            <div class="atm-grid">
-                ${filteredATMs.map(atm => `
-                    <article class="atm-card" onclick="showATMDetails(${atm.id})">
-                        <img src="${atm.image}" alt="${atm.name}" onerror="this.src='https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=300&h=200&fit=crop'">
-                        <div class="atm-info">
-                            <h3>${atm.name}</h3>
-                            <div class="operator">${atm.operator}</div>
-                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(atm.address)}" 
-                               class="address" 
-                               target="_blank"
-                               title="Get directions to this ATM">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>${atm.address}</span>
-                            </a>
-                            <a href="tel:${atm.phone}" class="phone">
-                                <i class="fas fa-phone"></i>
-                                <span>${atm.phone}</span>
-                            </a>
-                            <div class="hours">
-                                <i class="fas fa-clock"></i>
-                                <span>${atm.hours}</span>
+            ${filteredATMs.length > 0 ? `
+                <div class="atm-grid">
+                    ${filteredATMs.map(atm => `
+                        <article class="atm-card" onclick="showATMDetails(${atm.id})">
+                            <img src="${atm.image}" alt="${atm.name}" onerror="this.src='https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=300&h=200&fit=crop'">
+                            <div class="atm-info">
+                                <h3>${atm.name}</h3>
+                                <div class="operator">${atm.operator}</div>
+                                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(atm.address)}" 
+                                   class="address" 
+                                   target="_blank"
+                                   title="Get directions to this ATM">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>${atm.address}</span>
+                                </a>
+                                <a href="tel:${atm.phone}" class="phone">
+                                    <i class="fas fa-phone"></i>
+                                    <span>${atm.phone}</span>
+                                </a>
+                                <div class="hours">
+                                    <i class="fas fa-clock"></i>
+                                    <span>${atm.hours}</span>
+                                </div>
+                                <div class="coins">
+                                    ${atm.coins.map(coin => `<span class="coin-badge">${normalizeCryptoName(coin)}</span>`).join('')}
+                                </div>
                             </div>
-                            <div class="coins">
-                                ${atm.coins.map(coin => `<span class="coin-badge">${normalizeCryptoName(coin)}</span>`).join('')}
-                            </div>
-                        </div>
-                    </article>
-                `).join('')}
-            </div>
+                        </article>
+                    `).join('')}
+                </div>
+            ` : `
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <h3>No ATMs Found</h3>
+                    <p>Currently, there are no ATMs supporting ${normalizedCrypto} in Puerto Rico.</p>
+                </div>
+            `}
         </div>
     `;
 
