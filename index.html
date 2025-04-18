@@ -66,37 +66,42 @@
                        id="searchInput" 
                        placeholder="Search Bitcoin ATMs by city, location, or operator"
                        aria-label="Search Bitcoin ATMs">
-                <button id="searchButton" aria-label="Search">Search</button>
+                <button id="searchButton" aria-label="Search">
+                    <i class="fas fa-search"></i>
+                </button>
             </div>
         </section>
 
         <nav class="filters-bar" aria-label="Filter options">
-            <a href="/" class="filter-button active" data-filter="all">
-                <i class="fas fa-list" aria-hidden="true"></i>
+            <button class="filter-button active" data-filter="all">
+                <i class="fas fa-list"></i>
                 <span>All ATMs</span>
-            </a>
-            <a href="/neighborhoods.html" class="filter-button" data-filter="neighborhoods">
-                <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+            </button>
+            <button class="filter-button" data-filter="neighborhoods">
+                <i class="fas fa-map-marker-alt"></i>
                 <span>Neighborhoods</span>
-            </a>
-            <a href="/cryptocurrencies.html" class="filter-button" data-filter="cryptocurrencies">
-                <i class="fas fa-coins" aria-hidden="true"></i>
+            </button>
+            <button class="filter-button" data-filter="cryptocurrencies">
+                <i class="fas fa-coins"></i>
                 <span>Cryptocurrencies</span>
-            </a>
+            </button>
         </nav>
 
         <div class="content-grid">
-            <section class="atm-list content-section" aria-label="Bitcoin ATM Locations"></section>
+            <section class="atm-list content-section" aria-label="Bitcoin ATM Locations">
+                <!-- ATM list content will be dynamically inserted here -->
+            </section>
+            
             <section class="map-container content-section" aria-label="Interactive Map">
-                <div id="map" role="application" aria-label="Map of Bitcoin ATM locations"></div>
+                <div id="map"></div>
             </section>
-            <section class="neighborhoods-grid content-section" style="display: none;" aria-label="Neighborhoods">
-                <h2>Bitcoin ATMs by Neighborhood in Puerto Rico</h2>
-                <div class="neighborhood-cards"></div>
+            
+            <section class="neighborhoods-grid content-section" aria-label="Neighborhoods">
+                <!-- Neighborhood content will be dynamically inserted here -->
             </section>
-            <section class="crypto-grid content-section" style="display: none;" aria-label="Cryptocurrencies">
-                <h2>Supported Cryptocurrencies at Puerto Rico ATMs</h2>
-                <div class="crypto-cards"></div>
+            
+            <section class="crypto-grid content-section" aria-label="Cryptocurrencies">
+                <!-- Cryptocurrency content will be dynamically inserted here -->
             </section>
         </div>
     </main>
