@@ -621,12 +621,12 @@ function loadCryptocurrenciesContent() {
     const supportedCryptos = [
         { name: 'Bitcoin', symbol: 'BTC', count: 32, icon: 'fab fa-bitcoin' },
         { name: 'Ethereum', symbol: 'ETH', count: 20, icon: 'fab fa-ethereum' },
-        { name: 'Tether', symbol: 'USDT', count: 12, icon: 'fas fa-dollar-sign' },
-        { name: 'Litecoin', symbol: 'LTC', count: 8, icon: 'fab fa-litecoin' },
-        { name: 'Dogecoin', symbol: 'DOGE', count: 6, icon: 'fas fa-dog' },
-        { name: 'Ripple', symbol: 'XRP', count: 4, icon: 'fas fa-water' },
-        { name: 'Bitcoin Cash', symbol: 'BCH', count: 3, icon: 'fab fa-bitcoin' },
-        { name: 'USD Coin', symbol: 'USDC', count: 2, icon: 'fas fa-dollar-sign' }
+        { name: 'Tether', symbol: 'USDT', count: 0, icon: 'fas fa-dollar-sign' },
+        { name: 'Litecoin', symbol: 'LTC', count: 0, icon: 'fab fa-litecoin' },
+        { name: 'Dogecoin', symbol: 'DOGE', count: 0, icon: 'fas fa-dog' },
+        { name: 'Ripple', symbol: 'XRP', count: 0, icon: 'fas fa-water' },
+        { name: 'Bitcoin Cash', symbol: 'BCH', count: 0, icon: 'fab fa-bitcoin' },
+        { name: 'USD Coin', symbol: 'USDC', count: 0, icon: 'fas fa-dollar-sign' }
     ];
 
     const totalATMs = 32; // Total unique ATMs
@@ -912,13 +912,13 @@ function showCryptoATMs(cryptocurrency) {
     
     // Filter ATMs that support this cryptocurrency
     const filteredATMs = atmData.filter(atm => 
-        atm.coins.some(coin => normalizeCryptoName(coin) === normalizedCrypto)
+        atm.coins.some(coin => {
+            const normalizedCoin = normalizeCryptoName(coin);
+            return normalizedCoin === normalizedCrypto || 
+                   (normalizedCoin === 'BTC' && normalizedCrypto === 'Bitcoin') ||
+                   (normalizedCoin === 'ETH' && normalizedCrypto === 'Ethereum');
+        })
     );
-
-    // Hide other sections
-    document.querySelectorAll('.content-section').forEach(section => {
-        if (section) section.style.display = 'none';
-    });
 
     // Update content
     contentArea.innerHTML = `
