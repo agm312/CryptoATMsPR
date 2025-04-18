@@ -756,12 +756,51 @@ function updateMarkers(searchTerm) {
     markers.forEach(marker => marker.setMap(null));
     markers = [];
 
-    // Filter ATMs based on current filter and search
-    const filteredATMs = filterATMs(searchTerm);
+    const searchLower = searchTerm.toLowerCase().trim();
+    
+    // Define supported cryptocurrencies with search terms
+    const cryptoSearchTerms = {
+        'bitcoin': ['bitcoin', 'btc'],
+        'ethereum': ['ethereum', 'eth'],
+        'tether': ['tether', 'usdt'],
+        'litecoin': ['litecoin', 'ltc'],
+        'dogecoin': ['dogecoin', 'doge'],
+        'ripple': ['ripple', 'xrp'],
+        'bitcoin cash': ['bitcoin cash', 'bch'],
+        'usd coin': ['usd coin', 'usdc']
+    };
 
-    // Add new markers
+    // Find if search term matches any cryptocurrency
+    let matchedCrypto = null;
+    for (const [crypto, terms] of Object.entries(cryptoSearchTerms)) {
+        if (terms.some(term => term.includes(searchLower))) {
+            matchedCrypto = crypto;
+            break;
+        }
+    }
+
+    // Filter ATMs based on search term
+    const filteredATMs = atmData.filter(atm => {
+        if (!searchTerm) return true;
+
+        // Check location-based matches
+        const cityMatch = atm.city.toLowerCase().includes(searchLower);
+        const addressMatch = atm.address.toLowerCase().includes(searchLower);
+        const operatorMatch = atm.operator.toLowerCase().includes(searchLower);
+
+        // Check cryptocurrency matches
+        const coinMatch = atm.coins.some(coin => {
+            const normalizedCoin = normalizeCryptoName(coin).toLowerCase();
+            return normalizedCoin === matchedCrypto || 
+                   normalizedCoin.includes(searchLower) ||
+                   getCryptoSymbol(normalizedCoin).toLowerCase().includes(searchLower);
+        });
+
+        return cityMatch || addressMatch || operatorMatch || coinMatch;
+    });
+
+    // Add new markers for filtered ATMs
     filteredATMs.forEach(atm => {
-        // Create marker
         const marker = new google.maps.Marker({
             position: atm.location,
             map: map,
@@ -769,31 +808,34 @@ function updateMarkers(searchTerm) {
             icon: {
                 path: google.maps.SymbolPath.CIRCLE,
                 scale: 10,
-                fillColor: '#FF385C',
+                fillColor: matchedCrypto ? '#00ff00' : '#FF385C', // Green for crypto matches, red for others
                 fillOpacity: 1,
                 strokeColor: '#ffffff',
                 strokeWeight: 2
             }
         });
 
-        // Add click listener for showing details
         marker.addListener('click', () => showATMDetails(atm));
 
-        // Create info window content
         const infoContent = document.createElement('div');
         infoContent.className = 'info-window';
         infoContent.innerHTML = `
             <h3>${atm.name}</h3>
             <p>${atm.address}</p>
             <p>${atm.operator}</p>
+            <div class="coins">
+                ${atm.coins.map(coin => {
+                    const normalizedCoin = normalizeCryptoName(coin);
+                    const isHighlighted = matchedCrypto && normalizedCoin.toLowerCase() === matchedCrypto.toLowerCase();
+                    return `<span class="coin-badge${isHighlighted ? ' highlighted' : ''}">${normalizedCoin}</span>`;
+                }).join('')}
+            </div>
         `;
 
-        // Add info window
         const infoWindow = new google.maps.InfoWindow({
             content: infoContent
         });
 
-        // Add hover listeners
         marker.addListener('mouseover', () => infoWindow.open(map, marker));
         marker.addListener('mouseout', () => infoWindow.close());
 
@@ -820,25 +862,54 @@ function filterATMs(searchTerm) {
     });
 }
 
-function updateATMList(searchTerm) {
+function updateATMList(searchTerm = '') {
     const atmList = document.querySelector('.atm-list');
-    const filteredATMs = filterATMs(searchTerm);
+    if (!atmList) return;
 
-    if (filteredATMs.length === 0) {
-        atmList.innerHTML = `
-            <div class="empty-state">
-                <i class="fas fa-search"></i>
-                <h2>No ATMs Found</h2>
-                <p>Try adjusting your search or filters to find ATMs in Puerto Rico.</p>
-                <button onclick="resetFilters()" class="reset-btn">Reset Filters</button>
-            </div>
-        `;
-        return;
+    const searchLower = searchTerm.toLowerCase().trim();
+    
+    // Define supported cryptocurrencies with search terms
+    const cryptoSearchTerms = {
+        'bitcoin': ['bitcoin', 'btc'],
+        'ethereum': ['ethereum', 'eth'],
+        'tether': ['tether', 'usdt'],
+        'litecoin': ['litecoin', 'ltc'],
+        'dogecoin': ['dogecoin', 'doge'],
+        'ripple': ['ripple', 'xrp'],
+        'bitcoin cash': ['bitcoin cash', 'bch'],
+        'usd coin': ['usd coin', 'usdc']
+    };
+
+    // Find if search term matches any cryptocurrency
+    let matchedCrypto = null;
+    for (const [crypto, terms] of Object.entries(cryptoSearchTerms)) {
+        if (terms.some(term => term.includes(searchLower))) {
+            matchedCrypto = crypto;
+            break;
+        }
     }
 
-    // Update with just the count and ATM cards in a grid
-    atmList.innerHTML = `
-        <p class="atm-count">Found ${filteredATMs.length} ATMs across Puerto Rico</p>
+    const filteredATMs = atmData.filter(atm => {
+        if (!searchTerm) return true;
+
+        // Check location-based matches
+        const cityMatch = atm.city.toLowerCase().includes(searchLower);
+        const addressMatch = atm.address.toLowerCase().includes(searchLower);
+        const operatorMatch = atm.operator.toLowerCase().includes(searchLower);
+
+        // Check cryptocurrency matches
+        const coinMatch = atm.coins.some(coin => {
+            const normalizedCoin = normalizeCryptoName(coin).toLowerCase();
+            return normalizedCoin === matchedCrypto || 
+                   normalizedCoin.includes(searchLower) ||
+                   getCryptoSymbol(normalizedCoin).toLowerCase().includes(searchLower);
+        });
+
+        return cityMatch || addressMatch || operatorMatch || coinMatch;
+    });
+
+    atmList.innerHTML = filteredATMs.length > 0 ? `
+        <p class="atm-count">Found ${filteredATMs.length} ATM${filteredATMs.length !== 1 ? 's' : ''} ${matchedCrypto ? `supporting ${matchedCrypto.charAt(0).toUpperCase() + matchedCrypto.slice(1)}` : ''} across Puerto Rico</p>
         <div class="atm-grid">
             ${filteredATMs.map(atm => `
                 <article class="atm-card" itemscope itemtype="https://schema.org/LocalBusiness">
@@ -866,11 +937,22 @@ function updateATMList(searchTerm) {
                             <span>${atm.phone}</span>
                         </a>
                         <div class="coins">
-                            ${atm.coins.map(coin => `<span class="coin-badge">${coin}</span>`).join('')}
+                            ${atm.coins.map(coin => {
+                                const normalizedCoin = normalizeCryptoName(coin);
+                                const isHighlighted = matchedCrypto && normalizedCoin.toLowerCase() === matchedCrypto.toLowerCase();
+                                return `<span class="coin-badge${isHighlighted ? ' highlighted' : ''}">${normalizedCoin}</span>`;
+                            }).join('')}
                         </div>
                     </div>
                 </article>
             `).join('')}
+        </div>
+    ` : `
+        <div class="empty-state">
+            <i class="fas fa-search"></i>
+            <h3>No ATMs Found</h3>
+            <p>No ATMs match your search criteria.</p>
+            <button onclick="resetFilters()" class="reset-btn">Reset Filters</button>
         </div>
     `;
 }
