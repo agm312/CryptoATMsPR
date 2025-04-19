@@ -463,22 +463,17 @@ let markers = [];
 let currentFilter = 'all';
 let searchQuery = '';
 
-// Helper to get city name from SEO-friendly URL
-function getCityNameFromSeo(seoCity) {
-    const cities = [...new Set(atmData.map(atm => atm.city))];
-    return cities.find(city => city.toLowerCase().replace(/\s+/g, '') === seoCity) || seoCity;
-}
-
 // Initialize the page when DOM content is loaded
 document.addEventListener('DOMContentLoaded', () => {
     initializeSearch();
     setupEventListeners();
     
     const pathSegments = window.location.pathname.split('/').filter(segment => segment);
-    const searchTerm = '';
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchTerm = urlParams.get('search') || '';
 
     if (pathSegments.length === 0 || pathSegments[0] === 'index.html') {
-        loadGoogleMaps();
+        loadGoogleMaps(searchTerm);
         updateATMList(searchTerm);
     } else if (pathSegments[0] === 'Bitcoin' && pathSegments[1] === 'ATMs') {
         if (pathSegments[2] === 'PR') {
@@ -494,22 +489,12 @@ document.addEventListener('DOMContentLoaded', () => {
 // Initialize search functionality
 function initializeSearch() {
     const searchInput = document.querySelector('#searchInput');
-    if (!searchInput) {
-        console.warn('Search input (#searchInput) not found on this page');
-        return;
-    }
-    console.log('Search input initialized');
-
-    // Clear any existing value
-    searchInput.value = '';
+    if (!searchInput) return;
 
     // Get search term from URL if exists
     const urlParams = new URLSearchParams(window.location.search);
-    const searchTerm = urlParams.get('search');
-    if (searchTerm) {
-        searchInput.value = decodeURIComponent(searchTerm);
-        handleSearch({ target: { value: searchInput.value } }); // Trigger initial search
-    }
+    const searchTerm = urlParams.get('search') || '';
+    searchInput.value = decodeURIComponent(searchTerm);
 
     // Remove existing listener to prevent duplicates
     searchInput.removeEventListener('input', handleSearch);
@@ -519,37 +504,31 @@ function initializeSearch() {
 
 // Handle search across all pages
 function handleSearch(event) {
-    const searchTerm = event.target.value.toLowerCase().trim();
-    const currentPath = window.location.pathname;
+    const searchTerm = (event.target.value || '').toLowerCase().trim();
+    const pathSegments = window.location.pathname.split('/').filter(segment => segment);
 
     // Update URL with search term
-    const urlParams = new URLSearchParams(window.location.search);
-    if (searchTerm) {
-        urlParams.set('search', searchTerm);
-    } else {
-        urlParams.delete('search');
-    }
+    const newUrl = searchTerm 
+        ? `${window.location.pathname}?search=${encodeURIComponent(searchTerm)}`
+        : window.location.pathname;
     
-    // Update URL without page reload
-    const newUrl = `${window.location.pathname}${urlParams.toString() ? '?' + urlParams.toString() : ''}`;
     window.history.replaceState({}, '', newUrl);
 
     // Handle search based on current page
-    if (currentPath === '/' || currentPath === '/index.html') {
+    if (pathSegments.length === 0 || pathSegments[0] === 'index.html') {
         updateATMList(searchTerm);
-        if (typeof map !== 'undefined') {
-            updateMarkers(searchTerm);
+        updateMarkers(searchTerm);
+    } else if (pathSegments[0] === 'Bitcoin' && pathSegments[1] === 'ATMs') {
+        if (pathSegments[2] === 'PR') {
+            loadCryptocurrenciesContent(searchTerm);
+        } else if (pathSegments.length === 4 && pathSegments[3] === 'PR') {
+            loadNeighborhoodsContent(searchTerm);
         }
-    } else if (currentPath === '/neighborhoods' || currentPath === '/neighborhoods.html') {
-        loadNeighborhoodsContent(searchTerm);
-    } else if (currentPath === '/cryptocurrencies' || currentPath === '/cryptocurrencies.html') {
-        loadCryptocurrenciesContent(searchTerm);
     }
 }
 
 // Set up event listeners for navigation and search
 function setupEventListeners() {
-    // Handle filter button clicks
     document.querySelectorAll('.filter-button').forEach(button => {
         button.addEventListener('click', (e) => {
             e.preventDefault();
@@ -559,23 +538,164 @@ function setupEventListeners() {
     });
 
     // Handle browser back/forward buttons
-    window.addEventListener('popstate', () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const searchTerm = urlParams.get('search') || '';
-        handleSearch({ target: { value: searchTerm } });
-    });
+    window.addEventListener('popstate', handlePopState);
+}
+
+// Handle browser navigation
+function handlePopState() {
+    const pathSegments = window.location.pathname.split('/').filter(segment => segment);
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchTerm = urlParams.get('search') || '';
+
+    if (pathSegments.length === 0 || pathSegments[0] === 'index.html') {
+        loadGoogleMaps(searchTerm);
+        updateATMList(searchTerm);
+    } else if (pathSegments[0] === 'Bitcoin' && pathSegments[1] === 'ATMs') {
+        if (pathSegments[2] === 'PR') {
+            showCryptoATMs('Bitcoin');
+        } else if (pathSegments.length === 4 && pathSegments[3] === 'PR') {
+            const seoCity = pathSegments[2];
+            const cityName = getCityNameFromSeo(seoCity);
+            showNeighborhoodATMs(cityName);
+        }
+    }
+}
+
+// Load Google Maps with error handling
+function loadGoogleMaps(searchTerm = '') {
+    const mapContainer = document.getElementById('map');
+    if (!mapContainer) {
+        console.warn('Map container not found on this page');
+        return;
+    }
+
+    // If Google Maps is already loaded, initialize immediately
+    if (typeof google !== 'undefined' && typeof google.maps !== 'undefined') {
+        initMap(searchTerm);
+        return;
+    }
+
+    // Create script element for Google Maps
+    const script = document.createElement('script');
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDHlGwWjfMJXEtC4Zj6YFYNZtQKnAiYL8Y&callback=initMap';
+    script.async = true;
+    script.defer = true;
+
+    // Define initMap in global scope
+    window.initMap = function() {
+        try {
+            map = new google.maps.Map(mapContainer, {
+                center: { lat: 18.4655, lng: -66.1057 },
+                zoom: 10,
+                styles: [
+                    {
+                        featureType: "poi",
+                        elementType: "labels",
+                        stylers: [{ visibility: "off" }]
+                    }
+                ]
+            });
+            updateMarkers(searchTerm);
+        } catch (error) {
+            console.error('Error in initMap:', error);
+            displayMapError('Failed to initialize the map. Please try refreshing the page.');
+        }
+    };
+
+    // Handle script loading error
+    script.onerror = () => {
+        console.error('Failed to load Google Maps script');
+        displayMapError('Failed to load Google Maps. Please check your internet connection and try again.');
+    };
+
+    // Add script to document
+    document.head.appendChild(script);
+}
+
+// Update markers on the map
+function updateMarkers(searchTerm = '') {
+    if (!map || !markers) return;
+
+    // Clear existing markers
+    markers.forEach(marker => marker.setMap(null));
+    markers = [];
+
+    try {
+        const searchLower = (searchTerm || '').toLowerCase().trim();
+        
+        // Filter ATMs based on search term
+        const filteredATMs = atmData.filter(atm => {
+            if (!searchLower) return true;
+
+            return atm.city.toLowerCase().includes(searchLower) ||
+                   atm.address.toLowerCase().includes(searchLower) ||
+                   atm.operator.toLowerCase().includes(searchLower) ||
+                   atm.coins.some(coin => coin.toLowerCase().includes(searchLower));
+        });
+
+        // Add markers for filtered ATMs
+        filteredATMs.forEach(atm => {
+            if (!atm.location || typeof atm.location.lat !== 'number' || typeof atm.location.lng !== 'number') {
+                console.warn('Invalid location data for ATM:', atm);
+                return;
+            }
+
+            const marker = new google.maps.Marker({
+                position: atm.location,
+                map: map,
+                title: atm.name
+            });
+
+            marker.addListener('click', () => showATMDetails(atm));
+            markers.push(marker);
+        });
+
+        // Adjust map bounds if markers exist
+        if (markers.length > 0) {
+            const bounds = new google.maps.LatLngBounds();
+            markers.forEach(marker => bounds.extend(marker.getPosition()));
+            map.fitBounds(bounds);
+        }
+    } catch (error) {
+        console.error('Error in updateMarkers:', error);
+    }
+}
+
+// Display map error message
+function displayMapError(message) {
+    const mapElement = document.getElementById('map');
+    if (mapElement) {
+        mapElement.innerHTML = `
+            <div class="map-error">
+                <h3>Map Loading Error</h3>
+                <p>${message}</p>
+                <button onclick="retryLoadMap()" class="retry-btn">
+                    <i class="fas fa-sync-alt"></i> Retry Loading Map
+                </button>
+            </div>
+        `;
+    }
+}
+
+// Helper to get city name from SEO-friendly URL
+function getCityNameFromSeo(seoCity) {
+    const cities = [...new Set(atmData.map(atm => atm.city))];
+    return cities.find(city => city.toLowerCase().replace(/\s+/g, '') === seoCity.toLowerCase()) || seoCity;
 }
 
 // Update URL and navigate
 function setFilter(filter) {
+    const searchInput = document.querySelector('#searchInput');
+    const searchTerm = searchInput ? searchInput.value.trim() : '';
     let newPath = '/';
+
     switch (filter) {
         case 'neighborhoods':
         case 'cryptocurrencies':
-            newPath = '/Bitcoin/ATMs/PR';
+            newPath = `/Bitcoin/ATMs/PR${searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : ''}`;
             break;
         case 'all':
-            newPath = '/';
+            newPath = searchTerm ? `/?search=${encodeURIComponent(searchTerm)}` : '/';
             break;
     }
     window.location.href = newPath;
@@ -743,105 +863,6 @@ function loadCryptocurrenciesContent(searchTerm = '') {
             <p>No cryptocurrencies match your search criteria.</p>
         </div>
     `;
-}
-
-function updateMarkers(searchTerm = '') {
-    try {
-        // Clear existing markers
-        if (markers) {
-            markers.forEach(marker => marker.setMap(null));
-        }
-        markers = [];
-
-        // Safely handle search term
-        const searchLower = (searchTerm || '').toLowerCase().trim();
-        
-        // Filter ATMs based on search term
-        const filteredATMs = atmData.filter(atm => {
-            if (!searchLower) return true;
-
-            // Check location-based matches
-            const cityMatch = atm.city.toLowerCase().includes(searchLower);
-            const addressMatch = atm.address.toLowerCase().includes(searchLower);
-            const operatorMatch = atm.operator.toLowerCase().includes(searchLower);
-
-            // Check cryptocurrency matches
-            const coinMatch = atm.coins.some(coin => {
-                const normalizedCoin = normalizeCryptoName(coin).toLowerCase();
-                return normalizedCoin.includes(searchLower) || 
-                       getCryptoSymbol(normalizedCoin).toLowerCase().includes(searchLower);
-            });
-
-            return cityMatch || addressMatch || operatorMatch || coinMatch;
-        });
-
-        // Add markers for filtered ATMs
-        filteredATMs.forEach(atm => {
-            if (!atm.location || typeof atm.location.lat !== 'number' || typeof atm.location.lng !== 'number') {
-                console.warn('Invalid location data for ATM:', atm);
-                return;
-            }
-
-            const marker = new google.maps.Marker({
-                position: atm.location,
-                map: map,
-                title: atm.name,
-                icon: {
-                    path: google.maps.SymbolPath.CIRCLE,
-                    scale: 10,
-                    fillColor: '#FF385C',
-                    fillOpacity: 1,
-                    strokeColor: '#ffffff',
-                    strokeWeight: 2
-                }
-            });
-
-            marker.addListener('click', () => showATMDetails(atm));
-
-            const infoContent = document.createElement('div');
-            infoContent.className = 'info-window';
-            infoContent.innerHTML = `
-                <h3>${atm.name}</h3>
-                <p>${atm.address}</p>
-                <p>${atm.operator}</p>
-                <div class="coins">
-                    ${atm.coins.map(coin => `<span class="coin-badge">${normalizeCryptoName(coin)}</span>`).join('')}
-                </div>
-            `;
-
-            const infoWindow = new google.maps.InfoWindow({
-                content: infoContent
-            });
-
-            marker.addListener('mouseover', () => infoWindow.open(map, marker));
-            marker.addListener('mouseout', () => infoWindow.close());
-
-            markers.push(marker);
-        });
-
-        // Adjust map bounds if markers exist
-        if (markers.length > 0) {
-            const bounds = new google.maps.LatLngBounds();
-            markers.forEach(marker => bounds.extend(marker.getPosition()));
-            map.fitBounds(bounds);
-        }
-
-    } catch (error) {
-        console.error('Error in updateMarkers:', error);
-        // Don't show error UI here, just log the error
-    }
-}
-
-function filterATMs(searchTerm) {
-    return atmData.filter(atm => {
-        const matchesFilter = currentFilter === 'all' || atm.operator.toLowerCase() === currentFilter.toLowerCase();
-        const matchesSearch = !searchTerm || 
-            atm.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            atm.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            atm.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            atm.operator.toLowerCase().includes(searchTerm.toLowerCase());
-        return matchesFilter && matchesSearch;
-    });
 }
 
 function updateATMList(searchTerm = '') {
@@ -1107,112 +1128,6 @@ function showCryptoATMs(cryptocurrency) {
     `;
 
     window.location.href = `/Bitcoin/ATMs/PR`;
-}
-
-// Load Google Maps with error handling
-function loadGoogleMaps() {
-    // Check if Google Maps is already loaded
-    if (typeof google !== 'undefined' && typeof google.maps !== 'undefined') {
-        console.log('Google Maps already loaded, initializing map...');
-        initMap();
-        return;
-    }
-
-    // Get the map container
-    const mapContainer = document.getElementById('map');
-    if (!mapContainer) {
-        console.error('Map container not found');
-        return;
-    }
-
-    // Create a script element for Google Maps
-    const script = document.createElement('script');
-    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDHlGwWjfMJXEtC4Zj6YFYNZtQKnAiYL8Y&callback=initMap';
-    script.async = true;
-    script.defer = true;
-
-    // Handle script loading error
-    script.onerror = () => {
-        console.error('Failed to load Google Maps script');
-        displayMapError('Failed to load Google Maps. Please check your internet connection and try again.');
-    };
-
-    // Add the script to the document
-    document.head.appendChild(script);
-}
-
-// Initialize the map
-function initMap() {
-    const mapElement = document.getElementById('map');
-    if (!mapElement) {
-        console.error('Map element not found');
-        return;
-    }
-
-    try {
-        // Get search term from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const searchTerm = urlParams.get('search') || '';
-
-        // Create the map
-        map = new google.maps.Map(mapElement, {
-            center: { lat: 18.4655, lng: -66.1057 }, // Center on Puerto Rico
-            zoom: 10,
-            styles: [
-                {
-                    featureType: "poi",
-                    elementType: "labels",
-                    stylers: [{ visibility: "off" }]
-                }
-            ],
-            mapTypeControl: true,
-            streetViewControl: true,
-            fullscreenControl: true,
-            gestureHandling: 'cooperative'
-        });
-
-        // Initialize markers with search term
-        updateMarkers(searchTerm);
-
-        // Add success listener
-        google.maps.event.addListenerOnce(map, 'idle', () => {
-            console.log('Map loaded successfully');
-        });
-
-    } catch (error) {
-        console.error('Error in initMap:', error);
-        displayMapError('Failed to initialize the map. Please try refreshing the page.');
-    }
-}
-
-// Display map error message with more details
-function displayMapError(message) {
-    const mapElement = document.getElementById('map');
-    if (mapElement) {
-        mapElement.innerHTML = `
-            <div class="map-error">
-                <h2>Map Loading Error</h2>
-                <p>${message}</p>
-                <div class="error-details">
-                    <p>If the problem persists:</p>
-                    <ul>
-                        <li>Check your internet connection</li>
-                        <li>Try disabling ad blockers</li>
-                        <li>Clear your browser cache</li>
-                    </ul>
-                </div>
-                <div class="error-actions">
-                    <button onclick="retryLoadMap()" class="retry-btn">
-                        <i class="fas fa-sync-alt"></i> Retry Loading Map
-                    </button>
-                    <button onclick="showATMList()" class="view-list-btn">
-                        <i class="fas fa-list"></i> View ATM List
-                    </button>
-                </div>
-            </div>
-        `;
-        console.error('Map error displayed:', message);
-    }
 }
 
 // Retry loading the map with loading indicator
