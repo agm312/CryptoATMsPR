@@ -463,28 +463,29 @@ let markers = [];
 let currentFilter = 'all';
 let searchQuery = '';
 
+// Helper to get city name from SEO-friendly URL
+function getCityNameFromSeo(seoCity) {
+    const cities = [...new Set(atmData.map(atm => atm.city))];
+    return cities.find(city => city.toLowerCase().replace(/\s+/g, '') === seoCity) || seoCity;
+}
+
 // Initialize the page when DOM content is loaded
 document.addEventListener('DOMContentLoaded', () => {
     initializeSearch();
     setupEventListeners();
     
-    // Parse the URL path for clean URLs
     const pathSegments = window.location.pathname.split('/').filter(segment => segment);
     const searchTerm = '';
 
     if (pathSegments.length === 0 || pathSegments[0] === 'index.html') {
-        // Home page - initialize map and ATM list
         loadGoogleMaps();
         updateATMList(searchTerm);
     } else if (pathSegments[0] === 'Bitcoin' && pathSegments[1] === 'ATMs') {
         if (pathSegments[2] === 'PR') {
-            // Show all Bitcoin ATMs in Puerto Rico
             showCryptoATMs('Bitcoin');
-        } else if (pathSegments[3] === 'PR') {
-            // Show Bitcoin ATMs in specific city
-            const cityName = decodeURIComponent(pathSegments[2])
-                .split(/(?=[A-Z])/)
-                .join(' ');
+        } else if (pathSegments.length === 4 && pathSegments[3] === 'PR') {
+            const seoCity = pathSegments[2];
+            const cityName = getCityNameFromSeo(seoCity);
             showNeighborhoodATMs(cityName);
         }
     }
@@ -570,8 +571,6 @@ function setFilter(filter) {
     let newPath = '/';
     switch (filter) {
         case 'neighborhoods':
-            newPath = '/Bitcoin/ATMs/PR';
-            break;
         case 'cryptocurrencies':
             newPath = '/Bitcoin/ATMs/PR';
             break;
@@ -582,12 +581,11 @@ function setFilter(filter) {
     window.location.href = newPath;
 }
 
-// Load neighborhoods content with clean URLs
+// Load neighborhoods content
 function loadNeighborhoodsContent(searchTerm = '') {
     const neighborhoodsGrid = document.querySelector('.neighborhoods-grid');
     if (!neighborhoodsGrid) return;
 
-    // Get cities that match the search term
     const cities = [...new Set(atmData
         .filter(atm => 
             !searchTerm || 
@@ -607,11 +605,12 @@ function loadNeighborhoodsContent(searchTerm = '') {
         <h2>Bitcoin ATMs by Neighborhood in Puerto Rico</h2>
         <div class="neighborhood-cards">
             ${cities.map(city => {
-                const seoCity = city.replace(/\s+/g, '');
+                const seoCity = city.toLowerCase().replace(/\s+/g, '');
                 return `
-                    <div class="neighborhood-card" onclick="window.location.href='/Bitcoin/ATMs/${seoCity}/PR'">
+                    <div class="neighborhood-card">
                         <h3>${city}</h3>
                         <p>${cityATMs[city]} ATM${cityATMs[city] !== 1 ? 's' : ''}</p>
+                        <a href="/Bitcoin/ATMs/${seoCity}/PR" class="view-atms-btn">View ATMs</a>
                     </div>
                 `;
             }).join('')}
@@ -1053,9 +1052,8 @@ function showNeighborhoodATMs(city) {
         </div>
     `;
 
-    // Update URL to clean format
-    const seoCity = city.replace(/\s+/g, '');
-    window.history.pushState({ page: 'neighborhood', city: city }, '', `/Bitcoin/ATMs/${seoCity}/PR`);
+    const seoCity = city.toLowerCase().replace(/\s+/g, '');
+    window.location.href = `/Bitcoin/ATMs/${seoCity}/PR`;
 }
 
 function showCryptoATMs(cryptocurrency) {
@@ -1076,48 +1074,39 @@ function showCryptoATMs(cryptocurrency) {
                     <i class="fas fa-arrow-left"></i> Back to Cryptocurrencies
                 </a>
             </div>
-            ${filteredATMs.length > 0 ? `
-                <div class="atm-grid">
-                    ${filteredATMs.map(atm => `
-                        <article class="atm-card" onclick="showATMDetails(${atm.id})">
-                            <img src="${atm.image}" alt="${atm.name}" onerror="this.src='https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=300&h=200&fit=crop'">
-                            <div class="atm-info">
-                                <h3>${atm.name}</h3>
-                                <div class="operator">${atm.operator}</div>
-                                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(atm.address)}" 
-                                   class="address" 
-                                   target="_blank"
-                                   title="Get directions to this ATM">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span>${atm.address}</span>
-                                </a>
-                                <a href="tel:${atm.phone}" class="phone">
-                                    <i class="fas fa-phone"></i>
-                                    <span>${atm.phone}</span>
-                                </a>
-                                <div class="hours">
-                                    <i class="fas fa-clock"></i>
-                                    <span>${atm.hours}</span>
-                                </div>
-                                <div class="coins">
-                                    ${atm.coins.map(coin => `<span class="coin-badge">${normalizeCryptoName(coin)}</span>`).join('')}
-                                </div>
+            <div class="atm-grid">
+                ${filteredATMs.map(atm => `
+                    <article class="atm-card" onclick="showATMDetails(${JSON.stringify(atm)})">
+                        <img src="${atm.image}" alt="${atm.name}" onerror="this.src='https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=300&h=200&fit=crop'">
+                        <div class="atm-info">
+                            <h3>${atm.name}</h3>
+                            <div class="operator">${atm.operator}</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(atm.address)}" 
+                               class="address" 
+                               target="_blank"
+                               title="Get directions to this ATM">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>${atm.address}</span>
+                            </a>
+                            <a href="tel:${atm.phone}" class="phone">
+                                <i class="fas fa-phone"></i>
+                                <span>${atm.phone}</span>
+                            </a>
+                            <div class="hours">
+                                <i class="fas fa-clock"></i>
+                                <span>${atm.hours}</span>
                             </div>
-                        </article>
-                    `).join('')}
-                </div>
-            ` : `
-                <div class="empty-state">
-                    <i class="fas fa-search"></i>
-                    <h3>No ATMs Found</h3>
-                    <p>Currently, there are no ATMs supporting ${normalizedCrypto} in Puerto Rico.</p>
-                </div>
-            `}
+                            <div class="coins">
+                                ${atm.coins.map(coin => `<span class="coin-badge">${normalizeCryptoName(coin)}</span>`).join('')}
+                            </div>
+                        </div>
+                    </article>
+                `).join('')}
+            </div>
         </div>
     `;
 
-    // Update URL to clean format
-    window.history.pushState({ page: 'crypto', coin: normalizedCrypto }, '', `/Bitcoin/ATMs/PR`);
+    window.location.href = `/Bitcoin/ATMs/PR`;
 }
 
 // Load Google Maps with error handling
@@ -1259,10 +1248,9 @@ window.addEventListener('popstate', (event) => {
     } else if (pathSegments[0] === 'Bitcoin' && pathSegments[1] === 'ATMs') {
         if (pathSegments[2] === 'PR') {
             showCryptoATMs('Bitcoin');
-        } else if (pathSegments[3] === 'PR') {
-            const cityName = decodeURIComponent(pathSegments[2])
-                .split(/(?=[A-Z])/)
-                .join(' ');
+        } else if (pathSegments.length === 4 && pathSegments[3] === 'PR') {
+            const seoCity = pathSegments[2];
+            const cityName = getCityNameFromSeo(seoCity);
             showNeighborhoodATMs(cityName);
         }
     }
