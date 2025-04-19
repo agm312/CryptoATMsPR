@@ -463,14 +463,172 @@ let markers = [];
 let currentFilter = 'all';
 let searchQuery = '';
 
+// Initialize the page when DOM content is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    setupEventListeners();
+    handleInitialRoute();
+});
+
+// Set up event listeners
+function setupEventListeners() {
+    // Filter buttons
+    document.querySelectorAll('.filter-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            const filter = button.getAttribute('data-filter');
+            navigateTo(filter);
+        });
+    });
+
+    // Search input
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.trim();
+            handleSearch(searchTerm);
+        });
+    }
+
+    // Handle browser navigation
+    window.addEventListener('popstate', handlePopState);
+}
+
+// Handle initial route based on URL path
+function handleInitialRoute() {
+    const path = window.location.pathname;
+    const searchParams = new URLSearchParams(window.location.search);
+    const searchTerm = searchParams.get('search') || '';
+
+    // Parse the path to determine the view and parameters
+    if (path === '/' || path === '/index.html') {
+        handleView('all', { search: searchTerm });
+    } else if (path.startsWith('/neighborhoods')) {
+        const cityMatch = path.match(/\/neighborhoods\/([^/]+)/);
+        if (cityMatch) {
+            const city = decodeURIComponent(cityMatch[1].replace(/-/g, ' '));
+            handleView('neighborhoods', { city, search: searchTerm });
+        } else {
+            handleView('neighborhoods', { search: searchTerm });
+        }
+    } else if (path.startsWith('/cryptocurrencies')) {
+        const coinMatch = path.match(/\/cryptocurrencies\/([^/]+)/);
+        if (coinMatch) {
+            const coin = decodeURIComponent(coinMatch[1].replace(/-/g, ' '));
+            handleView('cryptocurrencies', { coin, search: searchTerm });
+        } else {
+            handleView('cryptocurrencies', { search: searchTerm });
+        }
+    }
+}
+
+// Navigate to a specific view
+function navigateTo(view, params = {}) {
+    // Construct the URL based on the view and parameters
+    let url = '/';
+    let title = 'Crypto ATMs PR';
+
+    switch (view) {
+        case 'neighborhoods':
+            if (params.city) {
+                const seoCity = params.city.toLowerCase().replace(/\s+/g, '-');
+                url = `/neighborhoods/${encodeURIComponent(seoCity)}`;
+                title = `${params.city} Bitcoin ATMs - Crypto ATMs PR`;
+            } else {
+                url = '/neighborhoods';
+                title = 'Neighborhoods - Crypto ATMs PR';
+            }
+            break;
+        case 'cryptocurrencies':
+            if (params.coin) {
+                const seoCoin = params.coin.toLowerCase().replace(/\s+/g, '-');
+                url = `/cryptocurrencies/${encodeURIComponent(seoCoin)}`;
+                title = `${params.coin} ATMs - Crypto ATMs PR`;
+            } else {
+                url = '/cryptocurrencies';
+                title = 'Cryptocurrencies - Crypto ATMs PR';
+            }
+            break;
+    }
+
+    // Add search parameter if present
+    if (params.search) {
+        const searchParams = new URLSearchParams();
+        searchParams.set('search', params.search);
+        url += `?${searchParams.toString()}`;
+    }
+
+    // Update URL and handle the view
+    window.history.pushState({ view, params }, title, url);
+    document.title = title;
+    handleView(view, params);
+}
+
+// Handle different views
+function handleView(view, params = {}) {
+    // Hide all sections first
+    document.querySelectorAll('.content-section').forEach(section => {
+        section.style.display = 'none';
+    });
+
+    // Remove active class from all filter buttons
+    document.querySelectorAll('.filter-button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Add active class to current filter button
+    const activeBtn = document.querySelector(`.filter-button[data-filter="${view}"]`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+    }
+
+    // Handle the specific view
+    switch (view) {
+        case 'neighborhoods':
+            if (params.city) {
+                showNeighborhoodATMs(params.city);
+            } else {
+                loadNeighborhoodsContent(params.search);
+            }
+            break;
+        case 'cryptocurrencies':
+            if (params.coin) {
+                showCryptoATMs(params.coin);
+            } else {
+                loadCryptocurrenciesContent(params.search);
+            }
+            break;
+        default:
+            // Show map and ATM list for default view
+            const mapContainer = document.querySelector('.map-container');
+            const atmList = document.querySelector('.atm-list');
+            if (mapContainer) mapContainer.style.display = 'block';
+            if (atmList) atmList.style.display = 'block';
+            
+            // Initialize map if not already initialized
+            if (!map && typeof google !== 'undefined') {
+                initMap();
+            }
+            
+            updateATMList(params.search);
+            if (map) updateMarkers(params.search);
+            break;
+    }
+}
+
 // Initialize Google Maps
 function initMap() {
     try {
+        const mapDiv = document.getElementById('map');
+        if (!mapDiv) {
+            console.error('Map container not found');
+            return;
+        }
+
         // Center on Puerto Rico
         const prCenter = { lat: 18.2208, lng: -66.5901 };
         
         // Create the map
-        map = new google.maps.Map(document.getElementById('map'), {
+        map = new google.maps.Map(mapDiv, {
             zoom: 9,
             center: prCenter,
             mapTypeControl: true,
@@ -486,184 +644,13 @@ function initMap() {
         updateMarkers(searchTerm);
     } catch (error) {
         console.error('Error initializing map:', error);
-        const mapContainer = document.getElementById('map');
-        if (mapContainer) {
-            mapContainer.innerHTML = '<div class="map-error">Error loading map. Please try refreshing the page.</div>';
-        }
+        displayMapError('Failed to initialize map. Please try refreshing the page.');
     }
-}
-
-// Initialize the page when DOM content is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    setupEventListeners();
-    showInitialContent();
-});
-
-// Set up event listeners
-function setupEventListeners() {
-    // Filter buttons
-    document.querySelectorAll('.filter-button').forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.preventDefault();
-            const filter = button.getAttribute('data-filter');
-            setFilter(filter);
-        });
-    });
-
-    // Search input
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.trim();
-            handleSearch(searchTerm);
-        });
-    }
-
-    // Search button
-    const searchButton = document.getElementById('searchButton');
-    if (searchButton) {
-        searchButton.addEventListener('click', () => {
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                handleSearch(searchInput.value.trim());
-            }
-        });
-    }
-
-    // Handle browser navigation
-    window.addEventListener('popstate', handlePopState);
-}
-
-// Show initial content based on URL
-function showInitialContent() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const view = urlParams.get('view') || 'all';
-    const searchTerm = urlParams.get('search') || '';
-    const city = urlParams.get('city');
-    const coin = urlParams.get('coin');
-
-    if (searchTerm) {
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            searchInput.value = searchTerm;
-        }
-    }
-
-    handleNavigation(view, { city, coin, search: searchTerm });
-}
-
-// Handle navigation between views
-function handleNavigation(filter, params = {}) {
-    // Hide all sections first
-    document.querySelectorAll('.content-section').forEach(section => {
-        section.style.display = 'none';
-    });
-
-    // Remove active class from all filter buttons
-    document.querySelectorAll('.filter-button').forEach(btn => {
-        btn.classList.remove('active');
-    });
-
-    // Add active class to current filter button
-    const activeBtn = document.querySelector(`.filter-button[data-filter="${filter}"]`);
-    if (activeBtn) {
-        activeBtn.classList.add('active');
-    }
-
-    // Construct clean URL
-    let newUrl = '/';
-    let title = 'Crypto ATMs PR';
-    
-    switch (filter) {
-        case 'neighborhoods':
-            if (params.city) {
-                const seoCity = params.city.toLowerCase().replace(/\s+/g, '-');
-                newUrl = `/neighborhoods/${seoCity}`;
-                title = `${params.city} Bitcoin ATMs - Crypto ATMs PR`;
-                showNeighborhoodATMs(params.city);
-            } else {
-                newUrl = '/neighborhoods';
-                title = 'Neighborhoods - Crypto ATMs PR';
-                loadNeighborhoodsContent(params.search);
-            }
-            break;
-        case 'cryptocurrencies':
-            if (params.coin) {
-                const seoCoin = params.coin.toLowerCase().replace(/\s+/g, '-');
-                newUrl = `/cryptocurrencies/${seoCoin}`;
-                title = `${params.coin} ATMs - Crypto ATMs PR`;
-                showCryptoATMs(params.coin);
-            } else {
-                newUrl = '/cryptocurrencies';
-                title = 'Cryptocurrencies - Crypto ATMs PR';
-                loadCryptocurrenciesContent(params.search);
-            }
-            break;
-        default:
-            // Show map and ATM list for default view
-            const mapContainer = document.querySelector('.map-container');
-            const atmList = document.querySelector('.atm-list');
-            if (mapContainer) mapContainer.style.display = 'block';
-            if (atmList) atmList.style.display = 'block';
-            updateATMList(params.search);
-            if (map) updateMarkers(params.search);
-            if (params.search) {
-                newUrl = `/?search=${encodeURIComponent(params.search)}`;
-                title = `Search: ${params.search} - Crypto ATMs PR`;
-            }
-            break;
-    }
-
-    // Update URL and title
-    window.history.pushState({ filter, params }, title, newUrl);
-    document.title = title;
-}
-
-// Handle search functionality
-function handleSearch(searchTerm) {
-    const currentView = new URLSearchParams(window.location.search).get('view') || 'all';
-    setFilter(currentView, { search: searchTerm });
-}
-
-// Update URL and handle navigation
-function setFilter(filter, params = {}) {
-    const normalizedFilter = filter.toLowerCase();
-    let url = './';
-    
-    const queryParams = new URLSearchParams();
-    if (normalizedFilter !== 'all') {
-        queryParams.set('view', normalizedFilter);
-    }
-    if (params.city) {
-        queryParams.set('city', params.city.toLowerCase());
-    }
-    if (params.coin) {
-        queryParams.set('coin', params.coin.toLowerCase());
-    }
-    if (params.search) {
-        queryParams.set('search', params.search);
-    }
-
-    const queryString = queryParams.toString();
-    url += queryString ? `?${queryString}` : '';
-
-    // Update URL without reloading the page
-    window.history.pushState({ filter: normalizedFilter, params }, '', url);
-    
-    // Handle the navigation
-    handleNavigation(normalizedFilter, params);
 }
 
 // Handle browser back/forward buttons
 function handlePopState(event) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const filter = urlParams.get('view') || 'all';
-    const params = {
-        city: urlParams.get('city'),
-        coin: urlParams.get('coin'),
-        search: urlParams.get('search')
-    };
-    handleNavigation(filter, params);
+    handleInitialRoute();
 }
 
 // Display error message if map fails to load
