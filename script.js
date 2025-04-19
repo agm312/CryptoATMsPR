@@ -468,30 +468,24 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeSearch();
     setupEventListeners();
     
-    // Check for query parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const coin = urlParams.get('coin');
-    const city = urlParams.get('city');
-    const searchTerm = urlParams.get('search') || '';
+    // Parse the URL path for clean URLs
+    const pathSegments = window.location.pathname.split('/').filter(segment => segment);
+    const searchTerm = '';
 
-    // Handle different pages based on pathname
-    const currentPath = window.location.pathname;
-    
-    if (currentPath === '/' || currentPath === '/index.html') {
+    if (pathSegments.length === 0 || pathSegments[0] === 'index.html') {
         // Home page - initialize map and ATM list
         loadGoogleMaps();
         updateATMList(searchTerm);
-    } else if (currentPath === '/neighborhoods' || currentPath === '/neighborhoods.html') {
-        if (city) {
-            showNeighborhoodATMs(decodeURIComponent(city));
-        } else {
-            loadNeighborhoodsContent(searchTerm);
-        }
-    } else if (currentPath === '/cryptocurrencies' || currentPath === '/cryptocurrencies.html') {
-        if (coin) {
-            showCryptoATMs(decodeURIComponent(coin));
-        } else {
-            loadCryptocurrenciesContent(searchTerm);
+    } else if (pathSegments[0] === 'Bitcoin' && pathSegments[1] === 'ATMs') {
+        if (pathSegments[2] === 'PR') {
+            // Show all Bitcoin ATMs in Puerto Rico
+            showCryptoATMs('Bitcoin');
+        } else if (pathSegments[3] === 'PR') {
+            // Show Bitcoin ATMs in specific city
+            const cityName = decodeURIComponent(pathSegments[2])
+                .split(/(?=[A-Z])/)
+                .join(' ');
+            showNeighborhoodATMs(cityName);
         }
     }
 });
@@ -576,10 +570,10 @@ function setFilter(filter) {
     let newPath = '/';
     switch (filter) {
         case 'neighborhoods':
-            newPath = '/neighborhoods';
+            newPath = '/Bitcoin/ATMs/PR';
             break;
         case 'cryptocurrencies':
-            newPath = '/cryptocurrencies';
+            newPath = '/Bitcoin/ATMs/PR';
             break;
         case 'all':
             newPath = '/';
@@ -588,7 +582,7 @@ function setFilter(filter) {
     window.location.href = newPath;
 }
 
-// Load neighborhoods content
+// Load neighborhoods content with clean URLs
 function loadNeighborhoodsContent(searchTerm = '') {
     const neighborhoodsGrid = document.querySelector('.neighborhoods-grid');
     if (!neighborhoodsGrid) return;
@@ -612,12 +606,15 @@ function loadNeighborhoodsContent(searchTerm = '') {
     neighborhoodsGrid.innerHTML = cities.length > 0 ? `
         <h2>Bitcoin ATMs by Neighborhood in Puerto Rico</h2>
         <div class="neighborhood-cards">
-            ${cities.map(city => `
-                <div class="neighborhood-card" onclick="window.location.href='/neighborhoods?city=${encodeURIComponent(city)}'">
-                    <h3>${city}</h3>
-                    <p>${cityATMs[city]} ATM${cityATMs[city] !== 1 ? 's' : ''}</p>
-                </div>
-            `).join('')}
+            ${cities.map(city => {
+                const seoCity = city.replace(/\s+/g, '');
+                return `
+                    <div class="neighborhood-card" onclick="window.location.href='/Bitcoin/ATMs/${seoCity}/PR'">
+                        <h3>${city}</h3>
+                        <p>${cityATMs[city]} ATM${cityATMs[city] !== 1 ? 's' : ''}</p>
+                    </div>
+                `;
+            }).join('')}
         </div>
     ` : `
         <div class="empty-state">
@@ -1012,7 +1009,7 @@ function showNeighborhoodATMs(city) {
             <div class="neighborhood-header">
                 <h2>Bitcoin ATMs in ${city}, Puerto Rico</h2>
                 <p class="atm-count">Found ${filteredATMs.length} Bitcoin ATM${filteredATMs.length !== 1 ? 's' : ''} in ${city}</p>
-                <a href="/neighborhoods" class="back-button">
+                <a href="/Bitcoin/ATMs/PR" class="back-button">
                     <i class="fas fa-arrow-left"></i> Back to Neighborhoods
                 </a>
             </div>
@@ -1055,6 +1052,10 @@ function showNeighborhoodATMs(city) {
             </div>
         </div>
     `;
+
+    // Update URL to clean format
+    const seoCity = city.replace(/\s+/g, '');
+    window.history.pushState({ page: 'neighborhood', city: city }, '', `/Bitcoin/ATMs/${seoCity}/PR`);
 }
 
 function showCryptoATMs(cryptocurrency) {
@@ -1071,7 +1072,7 @@ function showCryptoATMs(cryptocurrency) {
             <div class="crypto-header">
                 <h2>${normalizedCrypto} ATMs in Puerto Rico</h2>
                 <p class="atm-count">Found ${filteredATMs.length} ATM${filteredATMs.length !== 1 ? 's' : ''} supporting ${normalizedCrypto}</p>
-                <a href="/cryptocurrencies" class="back-button">
+                <a href="/Bitcoin/ATMs/PR" class="back-button">
                     <i class="fas fa-arrow-left"></i> Back to Cryptocurrencies
                 </a>
             </div>
@@ -1114,6 +1115,9 @@ function showCryptoATMs(cryptocurrency) {
             `}
         </div>
     `;
+
+    // Update URL to clean format
+    window.history.pushState({ page: 'crypto', coin: normalizedCrypto }, '', `/Bitcoin/ATMs/PR`);
 }
 
 // Load Google Maps with error handling
@@ -1246,13 +1250,20 @@ function showATMList() {
 }
 
 // Handle browser navigation
-window.addEventListener('popstate', () => {
-    const currentPath = window.location.pathname;
-    if (currentPath === '/' || currentPath === '/index.html') {
-        if (typeof google === 'undefined' || typeof google.maps === 'undefined') {
-            loadGoogleMaps();
-        } else {
-            initMap();
+window.addEventListener('popstate', (event) => {
+    const pathSegments = window.location.pathname.split('/').filter(segment => segment);
+    
+    if (pathSegments.length === 0 || pathSegments[0] === 'index.html') {
+        loadGoogleMaps();
+        updateATMList();
+    } else if (pathSegments[0] === 'Bitcoin' && pathSegments[1] === 'ATMs') {
+        if (pathSegments[2] === 'PR') {
+            showCryptoATMs('Bitcoin');
+        } else if (pathSegments[3] === 'PR') {
+            const cityName = decodeURIComponent(pathSegments[2])
+                .split(/(?=[A-Z])/)
+                .join(' ');
+            showNeighborhoodATMs(cityName);
         }
     }
 }); 
