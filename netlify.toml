@@ -2,16 +2,19 @@
   publish = "."
 
 [[redirects]]
-  from = "/*"
+  from = "/Bitcoin/ATMs/PR"
   to = "/index.html"
   status = 200
-
-[[redirects]]
-  from = "/Bitcoin/ATMs/PR"
-  to = "/cryptocurrencies.html"
-  status = 200
+  force = true
 
 [[redirects]]
   from = "/Bitcoin/ATMs/*/PR"
-  to = "/neighborhoods.html"
-  status = 200 
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = true 
