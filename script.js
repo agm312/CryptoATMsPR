@@ -749,102 +749,90 @@ function loadCryptocurrenciesContent(searchTerm = '') {
     `;
 }
 
-function updateMarkers(searchTerm) {
-    // Clear existing markers
-    markers.forEach(marker => marker.setMap(null));
-    markers = [];
-
-    const searchLower = searchTerm.toLowerCase().trim();
-    
-    // Define supported cryptocurrencies with search terms
-    const cryptoSearchTerms = {
-        'bitcoin': ['bitcoin', 'btc'],
-        'ethereum': ['ethereum', 'eth'],
-        'tether': ['tether', 'usdt'],
-        'litecoin': ['litecoin', 'ltc'],
-        'dogecoin': ['dogecoin', 'doge'],
-        'ripple': ['ripple', 'xrp'],
-        'bitcoin cash': ['bitcoin cash', 'bch'],
-        'usd coin': ['usd coin', 'usdc']
-    };
-
-    // Find if search term matches any cryptocurrency
-    let matchedCrypto = null;
-    for (const [crypto, terms] of Object.entries(cryptoSearchTerms)) {
-        if (terms.some(term => term.includes(searchLower))) {
-            matchedCrypto = crypto;
-            break;
+function updateMarkers(searchTerm = '') {
+    try {
+        // Clear existing markers
+        if (markers) {
+            markers.forEach(marker => marker.setMap(null));
         }
-    }
+        markers = [];
 
-    // Filter ATMs based on search term
-    const filteredATMs = atmData.filter(atm => {
-        if (!searchTerm) return true;
+        // Safely handle search term
+        const searchLower = (searchTerm || '').toLowerCase().trim();
+        
+        // Filter ATMs based on search term
+        const filteredATMs = atmData.filter(atm => {
+            if (!searchLower) return true;
 
-        // Check location-based matches
-        const cityMatch = atm.city.toLowerCase().includes(searchLower);
-        const addressMatch = atm.address.toLowerCase().includes(searchLower);
-        const operatorMatch = atm.operator.toLowerCase().includes(searchLower);
+            // Check location-based matches
+            const cityMatch = atm.city.toLowerCase().includes(searchLower);
+            const addressMatch = atm.address.toLowerCase().includes(searchLower);
+            const operatorMatch = atm.operator.toLowerCase().includes(searchLower);
 
-        // Check cryptocurrency matches
-        const coinMatch = atm.coins.some(coin => {
-            const normalizedCoin = normalizeCryptoName(coin).toLowerCase();
-            return normalizedCoin === matchedCrypto || 
-                   normalizedCoin.includes(searchLower) ||
-                   getCryptoSymbol(normalizedCoin).toLowerCase().includes(searchLower);
+            // Check cryptocurrency matches
+            const coinMatch = atm.coins.some(coin => {
+                const normalizedCoin = normalizeCryptoName(coin).toLowerCase();
+                return normalizedCoin.includes(searchLower) || 
+                       getCryptoSymbol(normalizedCoin).toLowerCase().includes(searchLower);
+            });
+
+            return cityMatch || addressMatch || operatorMatch || coinMatch;
         });
 
-        return cityMatch || addressMatch || operatorMatch || coinMatch;
-    });
-
-    // Add new markers for filtered ATMs
-    filteredATMs.forEach(atm => {
-        const marker = new google.maps.Marker({
-            position: atm.location,
-            map: map,
-            title: atm.name,
-            icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 10,
-                fillColor: matchedCrypto ? '#00ff00' : '#FF385C', // Green for crypto matches, red for others
-                fillOpacity: 1,
-                strokeColor: '#ffffff',
-                strokeWeight: 2
+        // Add markers for filtered ATMs
+        filteredATMs.forEach(atm => {
+            if (!atm.location || typeof atm.location.lat !== 'number' || typeof atm.location.lng !== 'number') {
+                console.warn('Invalid location data for ATM:', atm);
+                return;
             }
+
+            const marker = new google.maps.Marker({
+                position: atm.location,
+                map: map,
+                title: atm.name,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 10,
+                    fillColor: '#FF385C',
+                    fillOpacity: 1,
+                    strokeColor: '#ffffff',
+                    strokeWeight: 2
+                }
+            });
+
+            marker.addListener('click', () => showATMDetails(atm));
+
+            const infoContent = document.createElement('div');
+            infoContent.className = 'info-window';
+            infoContent.innerHTML = `
+                <h3>${atm.name}</h3>
+                <p>${atm.address}</p>
+                <p>${atm.operator}</p>
+                <div class="coins">
+                    ${atm.coins.map(coin => `<span class="coin-badge">${normalizeCryptoName(coin)}</span>`).join('')}
+                </div>
+            `;
+
+            const infoWindow = new google.maps.InfoWindow({
+                content: infoContent
+            });
+
+            marker.addListener('mouseover', () => infoWindow.open(map, marker));
+            marker.addListener('mouseout', () => infoWindow.close());
+
+            markers.push(marker);
         });
 
-        marker.addListener('click', () => showATMDetails(atm));
+        // Adjust map bounds if markers exist
+        if (markers.length > 0) {
+            const bounds = new google.maps.LatLngBounds();
+            markers.forEach(marker => bounds.extend(marker.getPosition()));
+            map.fitBounds(bounds);
+        }
 
-        const infoContent = document.createElement('div');
-        infoContent.className = 'info-window';
-        infoContent.innerHTML = `
-            <h3>${atm.name}</h3>
-            <p>${atm.address}</p>
-            <p>${atm.operator}</p>
-            <div class="coins">
-                ${atm.coins.map(coin => {
-                    const normalizedCoin = normalizeCryptoName(coin);
-                    const isHighlighted = matchedCrypto && normalizedCoin.toLowerCase() === matchedCrypto.toLowerCase();
-                    return `<span class="coin-badge${isHighlighted ? ' highlighted' : ''}">${normalizedCoin}</span>`;
-                }).join('')}
-            </div>
-        `;
-
-        const infoWindow = new google.maps.InfoWindow({
-            content: infoContent
-        });
-
-        marker.addListener('mouseover', () => infoWindow.open(map, marker));
-        marker.addListener('mouseout', () => infoWindow.close());
-
-        markers.push(marker);
-    });
-
-    // Adjust map bounds if markers exist
-    if (markers.length > 0) {
-        const bounds = new google.maps.LatLngBounds();
-        markers.forEach(marker => bounds.extend(marker.getPosition()));
-        map.fitBounds(bounds);
+    } catch (error) {
+        console.error('Error in updateMarkers:', error);
+        // Don't show error UI here, just log the error
     }
 }
 
@@ -1144,12 +1132,9 @@ function loadGoogleMaps() {
         return;
     }
 
-    // Define your Google Maps API key
-    const GOOGLE_MAPS_API_KEY = 'AIzaSyDHlGwWjfMJXEtC4Zj6YFYNZtQKnAiYL8Y'; // Replace with your actual API key
-
     // Create a script element for Google Maps
     const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&callback=initMap`;
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDHlGwWjfMJXEtC4Zj6YFYNZtQKnAiYL8Y&callback=initMap';
     script.async = true;
     script.defer = true;
 
@@ -1159,54 +1144,52 @@ function loadGoogleMaps() {
         displayMapError('Failed to load Google Maps. Please check your internet connection and try again.');
     };
 
-    // Add success handler
-    window.initMap = function() {
-        try {
-            console.log('Google Maps script loaded, initializing map...');
-            const mapElement = document.getElementById('map');
-            if (!mapElement) {
-                throw new Error('Map element not found after script load');
-            }
-
-            // Create the map with error boundaries
-            map = new google.maps.Map(mapElement, {
-                center: { lat: 18.4655, lng: -66.1057 }, // Center on Puerto Rico
-                zoom: 10,
-                styles: [
-                    {
-                        featureType: "poi",
-                        elementType: "labels",
-                        stylers: [{ visibility: "off" }]
-                    }
-                ],
-                mapTypeControl: true,
-                streetViewControl: true,
-                fullscreenControl: true,
-                gestureHandling: 'cooperative'
-            });
-
-            // Initialize markers and list
-            updateMarkers();
-            
-            // Add success listener
-            google.maps.event.addListenerOnce(map, 'idle', () => {
-                console.log('Map loaded and rendered successfully');
-            });
-
-        } catch (error) {
-            console.error('Error in initMap:', error);
-            displayMapError('Failed to initialize the map. Please try refreshing the page.');
-        }
-    };
-
-    // Add error handler for the API
-    window.gm_authFailure = function() {
-        console.error('Google Maps authentication failed');
-        displayMapError('Google Maps authentication failed. Please check the API key configuration.');
-    };
-
     // Add the script to the document
     document.head.appendChild(script);
+}
+
+// Initialize the map
+function initMap() {
+    const mapElement = document.getElementById('map');
+    if (!mapElement) {
+        console.error('Map element not found');
+        return;
+    }
+
+    try {
+        // Get search term from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchTerm = urlParams.get('search') || '';
+
+        // Create the map
+        map = new google.maps.Map(mapElement, {
+            center: { lat: 18.4655, lng: -66.1057 }, // Center on Puerto Rico
+            zoom: 10,
+            styles: [
+                {
+                    featureType: "poi",
+                    elementType: "labels",
+                    stylers: [{ visibility: "off" }]
+                }
+            ],
+            mapTypeControl: true,
+            streetViewControl: true,
+            fullscreenControl: true,
+            gestureHandling: 'cooperative'
+        });
+
+        // Initialize markers with search term
+        updateMarkers(searchTerm);
+
+        // Add success listener
+        google.maps.event.addListenerOnce(map, 'idle', () => {
+            console.log('Map loaded successfully');
+        });
+
+    } catch (error) {
+        console.error('Error in initMap:', error);
+        displayMapError('Failed to initialize the map. Please try refreshing the page.');
+    }
 }
 
 // Display map error message with more details
