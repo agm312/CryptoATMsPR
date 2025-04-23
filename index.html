@@ -59,47 +59,39 @@
     </header>
 
     <main>
-        <section class="search-container" aria-label="Search ATMs">
-            <div class="search-bar">
-                <label for="search-input" class="visually-hidden">Search Bitcoin ATMs</label>
-                <input type="text" 
-                       id="search-input" 
-                       placeholder="Search Bitcoin ATMs by city, location, or operator"
-                       aria-label="Search Bitcoin ATMs">
-                <button id="search-button" aria-label="Search">Search</button>
+        <div class="tabs">
+            <button class="tab active" data-tab="all">
+                <i class="fas fa-list"></i>
+                All ATMs
+            </button>
+            <button class="tab" data-tab="neighborhoods">
+                <i class="fas fa-map-marker-alt"></i>
+                Neighborhoods
+            </button>
+            <button class="tab" data-tab="cryptocurrencies">
+                <i class="fas fa-coins"></i>
+                Cryptocurrencies
+            </button>
+        </div>
+
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search Bitcoin ATMs by city, location, or operator">
+            <button id="searchButton">Search</button>
+        </div>
+
+        <div class="content">
+            <div id="all-atms" class="tab-content active">
+                <div id="map"></div>
+                <div id="atm-list" class="atm-grid"></div>
             </div>
-        </section>
 
-        <nav class="filters-bar" aria-label="Filter options">
-            <a href="?view=all" class="filter-button active" data-filter="all">
-                <i class="fas fa-list" aria-hidden="true"></i>
-                <span>All ATMs</span>
-            </a>
-            <a href="?view=neighborhoods" class="filter-button" data-filter="neighborhoods">
-                <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
-                <span>Neighborhoods</span>
-            </a>
-            <a href="?view=cryptocurrencies" class="filter-button" data-filter="cryptocurrencies">
-                <i class="fas fa-coins" aria-hidden="true"></i>
-                <span>Cryptocurrencies</span>
-            </a>
-        </nav>
+            <div id="neighborhoods" class="tab-content">
+                <!-- Content loaded from neighborhoods.html -->
+            </div>
 
-        <div class="content-grid">
-            <section id="atm-list-section" class="content-section">
-                <div id="map-container" class="map-container">
-                    <div id="map"></div>
-                </div>
-                <div id="atm-list" class="atm-list"></div>
-            </section>
-
-            <section id="neighborhoods-section" class="content-section" style="display: none;">
-                <!-- Content will be loaded dynamically -->
-            </section>
-
-            <section id="cryptocurrencies-section" class="content-section" style="display: none;">
-                <!-- Content will be loaded dynamically -->
-            </section>
+            <div id="cryptocurrencies" class="tab-content">
+                <!-- Content loaded from cryptocurrencies.html -->
+            </div>
         </div>
     </main>
 
