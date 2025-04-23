@@ -458,208 +458,441 @@ const atmData = [
 ];
 
 // Global variables
-let map;
+let map = null;
 let markers = [];
 let currentFilter = 'all';
 let searchQuery = '';
 
-// Initialize the page
+// Initialize the map and handle navigation
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM Content Loaded');
     setupEventListeners();
-    loadContent('all');
+    handleRoute();
 });
 
-// Set up event listeners
+// Set up event listeners for navigation and search
 function setupEventListeners() {
-    // Tab navigation
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            const tabId = tab.getAttribute('data-tab');
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            loadContent(tabId);
+    console.log('Setting up event listeners');
+    
+    // Handle navigation clicks
+    document.querySelectorAll('.filter-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            const path = e.currentTarget.getAttribute('href');
+            console.log('Navigation clicked:', path);
+            navigateTo(path);
         });
     });
 
-    // Search functionality
+    // Handle search input
     const searchInput = document.getElementById('searchInput');
-    const searchButton = document.getElementById('searchButton');
-
-    if (searchInput && searchButton) {
+    if (searchInput) {
         searchInput.addEventListener('input', (e) => {
-            searchQuery = e.target.value.toLowerCase();
-            filterATMs();
-        });
-
-        searchButton.addEventListener('click', () => {
-            filterATMs();
+            const searchTerm = e.target.value.toLowerCase();
+            console.log('Search term:', searchTerm);
+            updateATMList(searchTerm);
+            if (typeof updateMarkers === 'function') {
+                updateMarkers(searchTerm);
+            }
         });
     }
-}
 
-// Load content based on selected tab
-async function loadContent(tabId) {
-    currentFilter = tabId;
-    
-    // Hide all tab content
-    document.querySelectorAll('.tab-content').forEach(content => {
-        content.classList.remove('active');
+    // Handle browser back/forward buttons
+    window.addEventListener('popstate', () => {
+        console.log('Popstate event triggered');
+        handleRoute();
     });
-    
-    // Show selected tab content
-    const selectedContent = document.getElementById(tabId === 'all' ? 'all-atms' : tabId);
-    if (selectedContent) {
-        selectedContent.classList.add('active');
-    }
-
-    switch(tabId) {
-        case 'all':
-            showAllATMs();
-            break;
-        case 'neighborhoods':
-            await loadNeighborhoodsContent();
-            break;
-        case 'cryptocurrencies':
-            await loadCryptocurrenciesContent();
-            break;
-    }
 }
 
-// Load neighborhoods content
-async function loadNeighborhoodsContent() {
-    try {
-        const response = await fetch('neighborhoods.html');
-        const html = await response.text();
-        document.getElementById('neighborhoods').innerHTML = html;
-    } catch (error) {
-        console.error('Error loading neighborhoods content:', error);
-    }
+// Handle navigation to different views
+function navigateTo(path) {
+    console.log('Navigating to:', path);
+    history.pushState({}, '', path);
+    handleRoute();
 }
 
-// Load cryptocurrencies content
-async function loadCryptocurrenciesContent() {
-    try {
-        const response = await fetch('cryptocurrencies.html');
-        const html = await response.text();
-        document.getElementById('cryptocurrencies').innerHTML = html;
-    } catch (error) {
-        console.error('Error loading cryptocurrencies content:', error);
+// Handle routing based on current path
+function handleRoute() {
+    const path = window.location.pathname;
+    console.log('Handling route:', path);
+
+    // Hide all sections initially
+    ['all-atms', 'neighborhoods', 'cryptocurrencies'].forEach(id => {
+        const section = document.getElementById(id);
+        if (section) {
+            section.style.display = 'none';
+        }
+    });
+
+    // Remove active class from all filter buttons
+    document.querySelectorAll('.filter-button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Handle different routes
+    if (path === '/' || path === '/index.html') {
+        showAllATMs();
+        const allBtn = document.querySelector('[data-filter="all"]');
+        if (allBtn) allBtn.classList.add('active');
+    } else if (path === '/neighborhoods') {
+        showNeighborhoods();
+        const neighborhoodsBtn = document.querySelector('[data-filter="neighborhoods"]');
+        if (neighborhoodsBtn) neighborhoodsBtn.classList.add('active');
+    } else if (path === '/cryptocurrencies') {
+        showCryptocurrencies();
+        const cryptoBtn = document.querySelector('[data-filter="cryptocurrencies"]');
+        if (cryptoBtn) cryptoBtn.classList.add('active');
+    } else if (path.startsWith('/Bitcoin') || path.startsWith('/Ethereum') || 
+               path.startsWith('/Litecoin') || path.startsWith('/Tether') || 
+               path.startsWith('/Dogecoin') || path.startsWith('/USD/Coin') || 
+               path.startsWith('/Bitcoin/Cash')) {
+        const crypto = path.split('/')[1];
+        showCryptoATMs(crypto);
+    } else {
+        const city = path.split('/').filter(Boolean).join(' ');
+        if (city) {
+            showNeighborhoodATMs(city);
+        }
     }
 }
 
 // Show all ATMs view
 function showAllATMs() {
-    if (typeof google === 'undefined') {
-        console.error('Google Maps not loaded');
-        return;
+    console.log('Showing all ATMs');
+    const allATMsSection = document.getElementById('all-atms');
+    if (allATMsSection) {
+        allATMsSection.style.display = 'block';
     }
 
-    if (!map) {
-        initMap();
+    const mapContainer = document.getElementById('map');
+    if (mapContainer) {
+        mapContainer.style.display = 'block';
     }
 
-    updateATMList();
-    updateMarkers();
+    updateATMList('');
+    if (typeof updateMarkers === 'function') {
+        updateMarkers('');
+    }
 }
 
-// Initialize Google Maps
-function initMap() {
-    const mapOptions = {
-        center: { lat: 18.2208, lng: -66.5901 }, // Center of Puerto Rico
-        zoom: 9,
-        styles: [
-            {
-                featureType: "poi",
-                elementType: "labels",
-                stylers: [{ visibility: "off" }]
-            }
-        ]
-    };
+// Show neighborhoods view
+function showNeighborhoods() {
+    console.log('Showing neighborhoods');
+    const neighborhoodsSection = document.getElementById('neighborhoods');
+    if (!neighborhoodsSection) return;
 
-    map = new google.maps.Map(document.getElementById('map'), mapOptions);
-    updateMarkers();
+    neighborhoodsSection.style.display = 'block';
+    
+    // Get unique cities and count ATMs
+    const cities = {};
+    atmData.forEach(atm => {
+        cities[atm.city] = (cities[atm.city] || 0) + 1;
+    });
+
+    // Generate HTML for neighborhood cards
+    const html = `
+        <h2>Bitcoin ATMs by Neighborhood in Puerto Rico</h2>
+        <div class="neighborhood-cards">
+            ${Object.entries(cities).map(([city, count]) => `
+                <div class="neighborhood-card">
+                    <h3>${city}</h3>
+                    <p>${count} ATM${count !== 1 ? 's' : ''}</p>
+                    <a href="/${city.split(' ').join('/')}" class="view-atms-btn">View ATMs</a>
+                </div>
+            `).join('')}
+        </div>
+    `;
+
+    neighborhoodsSection.innerHTML = html;
 }
 
-// Update ATM list based on search
-function updateATMList() {
+// Show cryptocurrencies view
+function showCryptocurrencies() {
+    console.log('Showing cryptocurrencies');
+    const cryptoSection = document.getElementById('cryptocurrencies');
+    if (!cryptoSection) return;
+
+    cryptoSection.style.display = 'block';
+
+    // Count ATMs supporting each cryptocurrency
+    const cryptoCounts = {};
+    atmData.forEach(atm => {
+        atm.coins.forEach(coin => {
+            const normalizedCoin = normalizeCryptoName(coin);
+            cryptoCounts[normalizedCoin] = (cryptoCounts[normalizedCoin] || 0) + 1;
+        });
+    });
+
+    // Generate HTML for cryptocurrency cards
+    const html = `
+        <h2>Cryptocurrency ATMs in Puerto Rico</h2>
+        <div class="crypto-cards">
+            ${Object.entries(cryptoCounts).map(([crypto, count]) => `
+                <div class="crypto-card">
+                    <div class="crypto-icon">
+                        <i class="${getCryptoIcon(crypto)}"></i>
+                    </div>
+                    <h3>${crypto}</h3>
+                    <p class="crypto-symbol">${getCryptoSymbol(crypto)}</p>
+                    <p>${count} ATM${count !== 1 ? 's' : ''}</p>
+                    <a href="/${crypto.replace(' ', '/')}" class="view-atms-btn">View ATMs</a>
+                </div>
+            `).join('')}
+        </div>
+    `;
+
+    cryptoSection.innerHTML = html;
+}
+
+// Show ATMs for a specific neighborhood
+function showNeighborhoodATMs(city) {
+    console.log('Showing ATMs for city:', city);
+    const allATMsSection = document.getElementById('all-atms');
+    if (!allATMsSection) return;
+
+    allATMsSection.style.display = 'block';
+
+    const filteredATMs = atmData.filter(atm => 
+        atm.city.toLowerCase() === city.toLowerCase()
+    );
+
+    const heading = document.createElement('h2');
+    heading.textContent = `Bitcoin ATMs in ${city}`;
+    
+    const backButton = document.createElement('button');
+    backButton.className = 'back-button';
+    backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Neighborhoods';
+    backButton.onclick = () => navigateTo('/neighborhoods');
+
+    const contentArea = document.querySelector('.content-grid');
+    if (contentArea) {
+        contentArea.insertBefore(heading, contentArea.firstChild);
+        contentArea.insertBefore(backButton, contentArea.firstChild);
+    }
+
+    updateATMList('', filteredATMs);
+    if (typeof updateMarkers === 'function') {
+        updateMarkers(city);
+    }
+}
+
+// Show ATMs for a specific cryptocurrency
+function showCryptoATMs(crypto) {
+    console.log('Showing ATMs for crypto:', crypto);
+    const allATMsSection = document.getElementById('all-atms');
+    if (!allATMsSection) return;
+
+    allATMsSection.style.display = 'block';
+
+    const normalizedCrypto = normalizeCryptoName(crypto);
+    const filteredATMs = atmData.filter(atm =>
+        atm.coins.some(coin => normalizeCryptoName(coin) === normalizedCrypto)
+    );
+
+    const heading = document.createElement('h2');
+    heading.textContent = `${crypto} ATMs in Puerto Rico`;
+    
+    const backButton = document.createElement('button');
+    backButton.className = 'back-button';
+    backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Cryptocurrencies';
+    backButton.onclick = () => navigateTo('/cryptocurrencies');
+
+    const contentArea = document.querySelector('.content-grid');
+    if (contentArea) {
+        contentArea.insertBefore(heading, contentArea.firstChild);
+        contentArea.insertBefore(backButton, contentArea.firstChild);
+    }
+
+    updateATMList('', filteredATMs);
+    if (typeof updateMarkers === 'function') {
+        updateMarkers(crypto);
+    }
+}
+
+// Update ATM list based on search term
+function updateATMList(searchTerm = '', atms = atmData) {
+    console.log('Updating ATM list with search term:', searchTerm);
     const atmList = document.getElementById('atm-list');
     if (!atmList) return;
 
-    const filteredATMs = filterATMs();
-    
+    const filteredATMs = atms.filter(atm => {
+        if (!searchTerm) return true;
+        const searchString = `${atm.name} ${atm.address} ${atm.operator} ${atm.city}`.toLowerCase();
+        return searchString.includes(searchTerm.toLowerCase());
+    });
+
+    if (filteredATMs.length === 0) {
+        atmList.innerHTML = '<p class="no-results">No ATMs found matching your search.</p>';
+        return;
+    }
+
     atmList.innerHTML = filteredATMs.map(atm => `
         <div class="atm-card">
-            <img src="${atm.image}" alt="${atm.name}" class="atm-image">
+            <img src="${atm.image || 'https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=800&h=600&fit=crop'}" 
+                 alt="${atm.name}"
+                 class="atm-image"
+                 onerror="this.src='https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=800&h=600&fit=crop'">
             <div class="atm-info">
                 <h3>${atm.name}</h3>
-                <p><i class="fas fa-map-marker-alt"></i> ${atm.address}</p>
-                <p><i class="fas fa-clock"></i> ${atm.hours}</p>
-                <p><i class="fas fa-coins"></i> ${atm.coins.join(', ')}</p>
+                <p class="address">${atm.address}</p>
+                <p class="operator">Operator: ${atm.operator}</p>
+                <p class="hours">${atm.hours}</p>
+                <div class="supported-coins">
+                    ${atm.coins.map(coin => `<span class="coin">${coin}</span>`).join('')}
+                </div>
             </div>
             <div class="atm-actions">
                 <a href="https://www.google.com/maps?q=${atm.location.lat},${atm.location.lng}" 
-                   target="_blank" class="btn-directions">
+                   target="_blank" 
+                   class="directions-btn">
                     <i class="fas fa-directions"></i> Get Directions
                 </a>
-                <a href="${atm.website}" target="_blank" class="btn-website">
-                    <i class="fas fa-globe"></i> Visit Website
-                </a>
+                ${atm.website ? `
+                    <a href="${atm.website}" 
+                       target="_blank" 
+                       class="website-btn">
+                        <i class="fas fa-globe"></i> Visit Website
+                    </a>
+                ` : ''}
+                ${atm.phone ? `
+                    <a href="tel:${atm.phone}" 
+                       class="phone-btn">
+                        <i class="fas fa-phone"></i> ${atm.phone}
+                    </a>
+                ` : ''}
             </div>
         </div>
     `).join('');
 }
 
-// Filter ATMs based on search query
-function filterATMs() {
-    return atmData.filter(atm => {
-        const searchString = `${atm.name} ${atm.address} ${atm.operator} ${atm.city} ${atm.coins.join(' ')}`.toLowerCase();
-        return searchString.includes(searchQuery);
-    });
+// Initialize Google Map
+function initMap() {
+    console.log('Initializing map');
+    try {
+        const mapElement = document.getElementById('map');
+        if (!mapElement) {
+            console.error('Map container not found');
+            return;
+        }
+
+        const mapOptions = {
+            center: { lat: 18.2208, lng: -66.5901 },
+            zoom: 9,
+            styles: [
+                {
+                    featureType: "poi",
+                    elementType: "labels",
+                    stylers: [{ visibility: "off" }]
+                }
+            ]
+        };
+
+        window.map = new google.maps.Map(mapElement, mapOptions);
+        window.markers = [];
+        
+        // Add error handling for map load
+        google.maps.event.addListenerOnce(window.map, 'idle', () => {
+            console.log('Map loaded successfully');
+            updateMarkers('');
+        });
+
+        google.maps.event.addListenerOnce(window.map, 'error', () => {
+            console.error('Error loading map');
+            mapElement.innerHTML = `
+                <div class="map-error">
+                    <h3>Map Loading Error</h3>
+                    <p>Sorry, we couldn't load the map. Please try refreshing the page.</p>
+                </div>
+            `;
+        });
+    } catch (error) {
+        console.error('Error initializing map:', error);
+        const mapContainer = document.getElementById('map');
+        if (mapContainer) {
+            mapContainer.innerHTML = `
+                <div class="map-error">
+                    <h3>Map Loading Error</h3>
+                    <p>Sorry, we couldn't load the map. Please try refreshing the page.</p>
+                </div>
+            `;
+        }
+    }
 }
 
-// Update map markers
-function updateMarkers() {
-    if (!map) return;
+// Update map markers based on filter
+function updateMarkers(filter = '') {
+    console.log('Updating markers with filter:', filter);
+    if (!window.map || !window.markers) {
+        console.warn('Map or markers not initialized');
+        return;
+    }
 
     // Clear existing markers
-    markers.forEach(marker => marker.setMap(null));
-    markers = [];
+    window.markers.forEach(marker => marker.setMap(null));
+    window.markers = [];
 
-    const filteredATMs = filterATMs();
     const bounds = new google.maps.LatLngBounds();
+    let hasValidMarkers = false;
 
-    filteredATMs.forEach(atm => {
-        const marker = new google.maps.Marker({
-            position: atm.location,
-            map: map,
-            title: atm.name
-        });
+    atmData.forEach(atm => {
+        if (!atm.location || typeof atm.location.lat !== 'number' || typeof atm.location.lng !== 'number') {
+            console.warn('Invalid location data for ATM:', atm);
+            return;
+        }
 
-        const infoWindow = new google.maps.InfoWindow({
-            content: `
-                <div class="info-window">
-                    <h3>${atm.name}</h3>
-                    <p>${atm.address}</p>
-                    <p><strong>Hours:</strong> ${atm.hours}</p>
-                    <p><strong>Coins:</strong> ${atm.coins.join(', ')}</p>
-                    <a href="https://www.google.com/maps?q=${atm.location.lat},${atm.location.lng}" 
-                       target="_blank">Get Directions</a>
-                </div>
-            `
-        });
+        const matchesFilter = !filter || 
+            atm.city.toLowerCase().includes(filter.toLowerCase()) ||
+            atm.coins.some(coin => normalizeCryptoName(coin).toLowerCase().includes(filter.toLowerCase()));
 
-        marker.addListener('click', () => {
-            infoWindow.open(map, marker);
-        });
+        if (matchesFilter) {
+            try {
+                const position = new google.maps.LatLng(atm.location.lat, atm.location.lng);
+                const marker = new google.maps.Marker({
+                    position,
+                    map: window.map,
+                    title: atm.name,
+                    icon: {
+                        url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'
+                    }
+                });
 
-        markers.push(marker);
-        bounds.extend(atm.location);
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `
+                        <div class="info-window">
+                            <h3>${atm.name}</h3>
+                            <p>${atm.address}</p>
+                            <p>Operator: ${atm.operator}</p>
+                            <p>${atm.hours}</p>
+                            <div class="supported-coins">
+                                ${atm.coins.map(coin => `<span class="coin">${coin}</span>`).join('')}
+                            </div>
+                            <a href="https://www.google.com/maps?q=${position.lat()},${position.lng()}" 
+                               target="_blank">Get Directions</a>
+                        </div>
+                    `
+                });
+
+                marker.addListener('click', () => {
+                    infoWindow.open(window.map, marker);
+                });
+
+                window.markers.push(marker);
+                bounds.extend(position);
+                hasValidMarkers = true;
+            } catch (error) {
+                console.error('Error creating marker for ATM:', atm, error);
+            }
+        }
     });
 
-    if (filteredATMs.length > 0) {
-        map.fitBounds(bounds);
-        if (map.getZoom() > 15) {
-            map.setZoom(15);
+    if (hasValidMarkers && window.map) {
+        try {
+            window.map.fitBounds(bounds);
+            if (window.map.getZoom() > 15) {
+                window.map.setZoom(15);
+            }
+        } catch (error) {
+            console.error('Error adjusting map bounds:', error);
         }
     }
 }
@@ -720,7 +953,7 @@ function showATMDetails(atm) {
     const modalContent = modal.querySelector('.modal-content');
     
     // Create map links for both Google Maps and Apple Maps
-    const googleMapsUrl = `https://www.google.com/maps?q=${encodeURIComponent(atm.address)}`;
+    const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(atm.address)}`;
     const appleMapsUrl = `maps://maps.apple.com/?q=${encodeURIComponent(atm.address)}`;
 
     modalContent.innerHTML = `
@@ -762,7 +995,7 @@ function closeModal() {
 function resetFilters() {
     currentFilter = 'all';
     searchQuery = '';
-    document.querySelector('#search-input').value = '';
+    document.querySelector('#searchInput').value = '';
     document.querySelectorAll('.filter-button').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.filter === 'all');
     });
@@ -770,30 +1003,171 @@ function resetFilters() {
     updateATMList();
 }
 
-function renderATMCard(atm) {
-    return `
-        <div class="atm-card">
-            <img src="${atm.image || 'default-atm.jpg'}" alt="${atm.name}" class="atm-image">
-            <div class="atm-info">
-                <h3>${atm.name}</h3>
-                <p><strong>Address:</strong> ${atm.address}</p>
-                <p><strong>Hours:</strong> ${atm.hours || 'Not specified'}</p>
-                <p><strong>Cryptocurrencies:</strong> ${atm.coins.join(', ')}</p>
-            </div>
-            <div class="atm-actions">
-                <a href="https://www.google.com/maps?q=${atm.location.lat},${atm.location.lng}" target="_blank" class="btn btn-primary">View on Map</a>
-                ${atm.website ? `<a href="${atm.website}" target="_blank" class="btn btn-secondary">Visit Website</a>` : ''}
-            </div>
+// Load neighborhoods content
+function loadNeighborhoodsContent(searchTerm = '') {
+    const contentArea = document.querySelector('.content-grid');
+    if (!contentArea) return;
+
+    // Hide map container if it exists
+    const mapContainer = document.getElementById('map');
+    if (mapContainer) {
+        mapContainer.style.display = 'none';
+    }
+
+    const cities = [...new Set(atmData
+        .filter(atm => 
+            !searchTerm || 
+            atm.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            atm.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            atm.operator.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .map(atm => atm.city)
+    )];
+
+    const cityATMs = {};
+    cities.forEach(city => {
+        cityATMs[city] = atmData.filter(atm => atm.city === city).length;
+    });
+
+    contentArea.innerHTML = `
+        <div class="neighborhoods-grid">
+            <h2>Bitcoin ATMs by Neighborhood in Puerto Rico</h2>
+            ${cities.length > 0 ? `
+                <div class="neighborhood-cards">
+                    ${cities.map(city => {
+                        const seoCity = city.toLowerCase().replace(/\s+/g, '');
+                        return `
+                            <div class="neighborhood-card">
+                                <h3>${city}</h3>
+                                <p>${cityATMs[city]} ATM${cityATMs[city] !== 1 ? 's' : ''}</p>
+                                <a href="/Bitcoin/ATMs/${seoCity}/PR" class="view-atms-btn">View ATMs</a>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            ` : `
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <h3>No Neighborhoods Found</h3>
+                    <p>No neighborhoods match your search criteria.</p>
+                </div>
+            `}
         </div>
     `;
+
+    // Update URL
+    const newUrl = searchTerm 
+        ? `/Bitcoin/ATMs/PR?search=${encodeURIComponent(searchTerm)}`
+        : '/Bitcoin/ATMs/PR';
+    window.history.pushState({ page: 'neighborhoods' }, '', newUrl);
 }
 
-function updateActiveTab(view) {
-    document.querySelectorAll('.filter-button').forEach(button => {
-        button.classList.remove('active');
-    });
-    const activeButton = document.querySelector(`[data-filter="${view}"]`);
-    if (activeButton) {
-        activeButton.classList.add('active');
+// Load cryptocurrencies content
+function loadCryptocurrenciesContent(searchTerm = '') {
+    const contentArea = document.querySelector('.content-grid');
+    if (!contentArea) return;
+
+    // Hide map container if it exists
+    const mapContainer = document.getElementById('map');
+    if (mapContainer) {
+        mapContainer.style.display = 'none';
     }
-} 
+
+    // Get unique cryptocurrencies and their counts
+    const cryptoCounts = {};
+    atmData.forEach(atm => {
+        atm.coins.forEach(coin => {
+            const normalizedCoin = normalizeCryptoName(coin);
+            if (!cryptoCounts[normalizedCoin]) {
+                cryptoCounts[normalizedCoin] = atmData.filter(a => 
+                    a.coins.some(c => normalizeCryptoName(c) === normalizedCoin)
+                ).length;
+            }
+        });
+    });
+
+    // Define supported cryptocurrencies
+    const supportedCryptos = [
+        { name: 'Bitcoin', symbol: 'BTC', icon: 'fab fa-bitcoin', searchTerms: ['bitcoin', 'btc'] },
+        { name: 'Ethereum', symbol: 'ETH', icon: 'fab fa-ethereum', searchTerms: ['ethereum', 'eth'] },
+        { name: 'Tether', symbol: 'USDT', icon: 'fas fa-dollar-sign', searchTerms: ['tether', 'usdt'] },
+        { name: 'Litecoin', symbol: 'LTC', icon: 'fas fa-litecoin-sign', searchTerms: ['litecoin', 'ltc'] },
+        { name: 'Dogecoin', symbol: 'DOGE', icon: 'fas fa-dog', searchTerms: ['dogecoin', 'doge'] },
+        { name: 'Ripple', symbol: 'XRP', icon: 'fas fa-water', searchTerms: ['ripple', 'xrp'] },
+        { name: 'Bitcoin Cash', symbol: 'BCH', icon: 'fab fa-bitcoin', searchTerms: ['bitcoin cash', 'bch'] },
+        { name: 'USD Coin', symbol: 'USDC', icon: 'fas fa-dollar-sign', searchTerms: ['usd coin', 'usdc'] }
+    ];
+
+    // Filter cryptocurrencies based on search term
+    const filteredCryptos = searchTerm 
+        ? supportedCryptos.filter(crypto => 
+            crypto.searchTerms.some(term => term.includes(searchTerm.toLowerCase())) ||
+            crypto.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            crypto.symbol.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        : supportedCryptos;
+
+    contentArea.innerHTML = `
+        <div class="crypto-grid">
+            <h2>Supported Cryptocurrencies at Puerto Rico ATMs</h2>
+            <p class="crypto-description">Find ATMs supporting various cryptocurrencies across Puerto Rico</p>
+            ${filteredCryptos.length > 0 ? `
+                <div class="crypto-cards">
+                    ${filteredCryptos.map(crypto => {
+                        const count = cryptoCounts[crypto.name] || 0;
+                        return `
+                            <div class="crypto-card">
+                                <div class="crypto-icon">
+                                    <i class="${crypto.icon}"></i>
+                                </div>
+                                <h3>${crypto.name}</h3>
+                                <p class="crypto-symbol">${crypto.symbol}</p>
+                                <p class="atm-count">${count} ATM${count !== 1 ? 's' : ''}</p>
+                                <a href="/Bitcoin/ATMs/PR" class="view-atms-btn">View ATMs</a>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            ` : `
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <h3>No Cryptocurrencies Found</h3>
+                    <p>No cryptocurrencies match your search criteria.</p>
+                </div>
+            `}
+        </div>
+    `;
+
+    // Update URL
+    const newUrl = searchTerm 
+        ? `/Bitcoin/ATMs/PR?search=${encodeURIComponent(searchTerm)}`
+        : '/Bitcoin/ATMs/PR';
+    window.history.pushState({ page: 'cryptocurrencies' }, '', newUrl);
+}
+
+// Handle browser navigation
+window.addEventListener('popstate', (event) => {
+    const path = window.location.pathname;
+    const searchParams = new URLSearchParams(window.location.search);
+    const searchTerm = searchParams.get('search') || '';
+
+    if (path === '/' || path === '/index.html') {
+        handleNavigation('all', { search: searchTerm });
+    } else if (path.startsWith('/neighborhoods')) {
+        const cityMatch = path.match(/\/neighborhoods\/([^/]+)/);
+        if (cityMatch) {
+            const city = cityMatch[1].replace(/-/g, ' ');
+            handleNavigation('neighborhoods', { city });
+        } else {
+            handleNavigation('neighborhoods', { search: searchTerm });
+        }
+    } else if (path.startsWith('/cryptocurrencies')) {
+        const coinMatch = path.match(/\/cryptocurrencies\/([^/]+)/);
+        if (coinMatch) {
+            const coin = coinMatch[1].replace(/-/g, ' ');
+            handleNavigation('cryptocurrencies', { coin });
+        } else {
+            handleNavigation('cryptocurrencies', { search: searchTerm });
+        }
+    }
+}); 

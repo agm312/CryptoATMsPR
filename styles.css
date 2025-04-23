@@ -8,6 +8,7 @@
     --header-height: 80px;
 }
 
+/* Reset & Base Styles */
 * {
     margin: 0;
     padding: 0;
@@ -21,6 +22,7 @@ body {
     line-height: 1.5;
 }
 
+/* Header */
 header {
     position: fixed;
     top: 0;
@@ -58,6 +60,7 @@ header {
     color: var(--primary-color);
 }
 
+/* Search */
 .search-container {
     position: relative;
     max-width: 850px;
@@ -104,6 +107,7 @@ header {
     background-color: #E61E4D;
 }
 
+/* Filters Bar */
 .filters-bar {
     position: fixed;
     top: var(--header-height);
@@ -135,16 +139,7 @@ header {
     color: var(--text-dark);
 }
 
-.filter-button img {
-    width: 24px;
-    height: 24px;
-    opacity: 0.7;
-}
-
-.filter-button.active img {
-    opacity: 1;
-}
-
+/* Main Content Layout */
 main {
     margin-top: calc(var(--header-height) + 80px);
     padding: 24px 80px;
@@ -171,123 +166,8 @@ main {
     box-shadow: 0 2px 4px var(--shadow-color);
 }
 
-.atm-list {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    padding: 20px;
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-.atm-card {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.atm-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.atm-image {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 12px 12px 0 0;
-}
-
-.atm-info {
-    padding: 20px;
-}
-
-.atm-info h3 {
-    margin: 0 0 12px 0;
-    font-size: 1.2rem;
-    color: #333;
-}
-
-.atm-info .address {
-    color: var(--text-light);
-    margin-bottom: 8px;
-    font-size: 0.9rem;
-}
-
-.atm-info .operator {
-    font-weight: 500;
-    margin-bottom: 8px;
-}
-
-.atm-info .hours {
-    font-size: 0.9rem;
-    color: var(--text-light);
-    margin-bottom: 12px;
-}
-
-.supported-coins {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 16px;
-}
-
-.coin {
-    background: #f0f0f0;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    color: var(--text-dark);
-}
-
-.atm-actions {
-    padding: 0 20px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.atm-actions a {
-    text-decoration: none;
-    color: var(--text-dark);
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: background-color 0.2s;
-}
-
-.atm-actions a:hover {
-    background-color: #f5f5f5;
-}
-
-.atm-actions i {
-    font-size: 1rem;
-    color: var(--primary-color);
-}
-
-@media (max-width: 1200px) {
-    .atm-list {
-        grid-template-columns: repeat(2, 1fr);
-        padding: 16px;
-    }
-}
-
-@media (max-width: 768px) {
-    .atm-list {
-        grid-template-columns: 1fr;
-        padding: 12px;
-    }
-    
-    .atm-image {
-        height: 180px;
-    }
-}
-
+/* Cards for ATM, Neighborhoods, Cryptos */
+.atm-grid,
 .neighborhood-cards,
 .crypto-cards {
     display: grid;
@@ -296,6 +176,7 @@ main {
     margin-top: 24px;
 }
 
+.atm-card,
 .neighborhood-card,
 .crypto-card {
     background: white;
@@ -308,306 +189,84 @@ main {
     flex-direction: column;
 }
 
+.atm-card:hover,
 .neighborhood-card:hover,
 .crypto-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.neighborhood-card h3 {
-    font-size: 1.5rem;
-    margin-bottom: 8px;
-    color: var(--text-dark);
-}
-
-.neighborhood-card p {
-    color: var(--text-light);
-    margin-bottom: 16px;
-}
-
-.view-atms-btn {
-    display: inline-block;
-    padding: 12px 24px;
-    background-color: var(--primary-color);
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: background-color 0.2s;
-}
-
-.view-atms-btn:hover {
-    background-color: #E61E4D;
-}
-
-.crypto-grid {
-    padding: 2rem;
-}
-
-.crypto-description {
-    text-align: center;
-    color: #666;
-    margin-bottom: 1rem;
-}
-
-.total-atms {
-    text-align: center;
-    color: #FF385C;
-    font-size: 1.2rem;
+.operator {
     font-weight: 600;
-    margin-bottom: 2rem;
+    font-size: 1.1em;
+    margin-bottom: 8px;
 }
 
-.crypto-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 2rem;
-    padding: 1rem;
+.address, .phone {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    text-decoration: none;
+    margin-bottom: 8px;
 }
 
-.crypto-card {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    cursor: pointer;
-}
-
-.crypto-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.crypto-icon {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
+.address:hover, .phone:hover {
     color: #FF385C;
 }
 
-.crypto-card h3 {
-    font-size: 1.5rem;
-    margin: 0.5rem 0;
-    color: #333;
-}
-
-.crypto-symbol {
-    font-size: 1rem;
-    color: #666;
-    margin: 0.5rem 0;
-}
-
-.atm-count {
-    font-size: 1.1rem;
-    color: #444;
-    margin: 0.5rem 0 1rem;
-}
-
-.view-atms-btn {
-    background: #FF385C;
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 6px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.view-atms-btn:hover {
-    background: #E6324F;
-}
-
-.crypto-atm-list {
-    padding: 2rem;
-}
-
-.crypto-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.crypto-header h2 {
-    font-size: 2rem;
-    color: #333;
-    margin-bottom: 0.5rem;
-}
-
-.back-button {
-    background: #f5f5f5;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 6px;
-    color: #333;
-    font-weight: 500;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    transition: background-color 0.2s ease;
-}
-
-.back-button:hover {
-    background: #e5e5e5;
+.coins {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
 }
 
 .coin-badge {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    background: #f0f0f0;
-    border-radius: 20px;
-    font-size: 0.9rem;
+    background: #f5f5f5;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
     color: #666;
-    margin: 0.25rem;
 }
 
-/* Keep the Bitcoin ATMs page styles separate */
-.bitcoin-atms-page .atm-list {
-    /* Existing styles for the Bitcoin ATMs page */
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 24px;
-    padding: 24px;
-    max-width: 1400px;
+/* Footer */
+.footer-content {
+    max-width: 1200px;
     margin: 0 auto;
-}
-
-.atm-count {
-    text-align: center;
-    color: #666;
-    margin: 24px 0;
-    font-size: 1.1em;
-}
-
-/* Add ATM Form Styles */
-.form-container {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-}
-
-.form-intro {
-    margin-bottom: 2rem;
-    color: #666;
-    font-size: 1.1rem;
-    line-height: 1.5;
-}
-
-.add-atm-form {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    padding: 2rem;
-}
-
-.form-section {
-    margin-bottom: 2rem;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid #eee;
-}
-
-.form-section:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-}
-
-.form-section h2 {
-    font-size: 1.25rem;
-    margin-bottom: 1.5rem;
-    color: #333;
-}
-
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: #333;
-}
-
-.form-group input[type="text"],
-.form-group input[type="tel"],
-.form-group input[type="email"],
-.form-group input[type="url"],
-.form-group textarea {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 1rem;
-    transition: border-color 0.2s;
-}
-
-.form-group input:focus,
-.form-group textarea:focus {
-    border-color: #ff4d6a;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(255, 77, 106, 0.1);
-}
-
-.checkbox-group {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-    margin-top: 0.5rem;
-}
-
-.checkbox-label {
+    padding: 24px 80px;
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 0.5rem;
-    font-weight: normal;
+    border-top: 1px solid var(--border-color);
 }
 
-.form-group small {
-    display: block;
-    margin-top: 0.5rem;
-    color: #666;
-    font-size: 0.875rem;
+.footer-nav {
+    display: flex;
+    gap: 24px;
 }
 
-.form-actions {
-    margin-top: 2rem;
-    text-align: center;
+.footer-nav a {
+    color: var(--text-dark);
+    text-decoration: none;
 }
 
-.submit-btn {
-    background: #ff4d6a;
-    color: white;
-    border: none;
-    padding: 1rem 2rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.submit-btn:hover {
-    background: #ff3557;
-}
-
-.submit-btn:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(255, 77, 106, 0.3);
-}
-
+/* Responsive */
 @media (max-width: 768px) {
-    .form-container {
-        margin: 1rem auto;
-    }
-    
-    .add-atm-form {
-        padding: 1.5rem;
-    }
-    
-    .checkbox-group {
+    .atm-grid,
+    .neighborhood-cards,
+    .crypto-cards {
         grid-template-columns: 1fr;
+    }
+
+    .footer-content {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+        padding: 24px;
+    }
+
+    .content-grid {
+        padding: 0 16px;
     }
 } 
