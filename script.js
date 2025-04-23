@@ -11,7 +11,7 @@ const atmData = [
         coins: ["Bitcoin", "Ethereum"],
         location: { lat: 18.4037, lng: -66.0636 },
         city: "San Juan",
-        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=800&h=600&fit=crop"
     },
     {
         id: 2,
@@ -24,7 +24,7 @@ const atmData = [
         coins: ["BTC"],
         location: { lat: 18.3793, lng: -66.1635 },
         city: "Carolina",
-        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=800&h=600&fit=crop"
     },
     {
         id: 3,
@@ -37,7 +37,7 @@ const atmData = [
         coins: ["BTC"],
         location: { lat: 18.4054, lng: -65.9792 },
         city: "Bayamón",
-        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=800&h=600&fit=crop"
     },
     {
         id: 4,
@@ -50,7 +50,7 @@ const atmData = [
         coins: ["BTC"],
         location: { lat: 18.0115, lng: -66.163 },
         city: "Ponce",
-        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=800&h=600&fit=crop"
     },
     {
         id: 5,
@@ -63,7 +63,7 @@ const atmData = [
         coins: ["BTC", "ETH"],
         location: { lat: 18.2319, lng: -66.0388 },
         city: "Mayagüez",
-        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=800&h=600&fit=crop"
     },
     {
         id: 6,
@@ -76,7 +76,7 @@ const atmData = [
         coins: ["BTC"],
         location: { lat: 18.3839, lng: -66.1134 },
         city: "Hatillo",
-        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=800&h=600&fit=crop"
     },
     {
         id: 7,
@@ -89,7 +89,7 @@ const atmData = [
         coins: ["BTC", "ETH"],
         location: { lat: 18.3601, lng: -66.0103 },
         city: "Arecibo",
-        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=800&h=600&fit=crop"
     },
     {
         id: 8,
@@ -102,7 +102,7 @@ const atmData = [
         coins: ["BTC"],
         location: { lat: 18.4454, lng: -66.1759 },
         city: "Caguas",
-        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=800&h=600&fit=crop"
     },
     {
         id: 9,
@@ -115,7 +115,7 @@ const atmData = [
         coins: ["BTC", "ETH"],
         location: { lat: 17.9744, lng: -66.1104 },
         city: "Aguadilla",
-        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=800&h=600&fit=crop"
     },
     {
         id: 10,
@@ -128,7 +128,7 @@ const atmData = [
         coins: ["BTC"],
         location: { lat: 18.0344, lng: -66.8615 },
         city: "Fajardo",
-        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=800&h=600&fit=crop"
     },
     {
         id: 11,
@@ -141,7 +141,7 @@ const atmData = [
         coins: ["BTC"],
         location: { lat: 18.1155, lng: -66.163 },
         city: "Guaynabo",
-        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=800&h=600&fit=crop"
     },
     {
         id: 12,
@@ -154,7 +154,7 @@ const atmData = [
         coins: ["BTC", "ETH"],
         location: { lat: 18.4283, lng: -66.4823 },
         city: "Toa Baja",
-        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=800&h=600&fit=crop"
     },
     {
         id: 13,
@@ -167,7 +167,7 @@ const atmData = [
         coins: ["BTC"],
         location: { lat: 18.3789, lng: -65.8388 },
         city: "Humacao",
-        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=800&h=600&fit=crop"
     },
     {
         id: 14,
@@ -180,7 +180,7 @@ const atmData = [
         coins: ["BTC", "ETH"],
         location: { lat: 18.0765, lng: -66.3638 },
         city: "Vega Baja",
-        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=800&h=600&fit=crop"
     },
     {
         id: 15,
@@ -193,7 +193,7 @@ const atmData = [
         coins: ["BTC"],
         location: { lat: 18.3609, lng: -66.2184 },
         city: "Toa Alta",
-        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=800&h=600&fit=crop"
     },
     {
         id: 16,
@@ -206,7 +206,7 @@ const atmData = [
         coins: ["BTC", "ETH"],
         location: { lat: 18.0821, lng: -66.9673 },
         city: "Añasco",
-        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=800&h=600&fit=crop"
     },
     {
         id: 17,
@@ -219,7 +219,7 @@ const atmData = [
         coins: ["BTC"],
         location: { lat: 18.2264, lng: -65.9163 },
         city: "Río Grande",
-        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=800&h=600&fit=crop"
     },
     {
         id: 18,
@@ -232,7 +232,7 @@ const atmData = [
         coins: ["BTC", "ETH"],
         location: { lat: 18.3735, lng: -65.7218 },
         city: "Luquillo",
-        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=800&h=600&fit=crop"
     },
     {
         id: 19,
@@ -245,7 +245,7 @@ const atmData = [
         coins: ["BTC"],
         location: { lat: 18.2529, lng: -65.9786 },
         city: "Canóvanas",
-        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=800&h=600&fit=crop"
     },
     {
         id: 20,
@@ -258,7 +258,7 @@ const atmData = [
         coins: ["BTC", "ETH"],
         location: { lat: 18.4273, lng: -66.1809 },
         city: "Guaynabo",
-        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=800&h=600&fit=crop"
     },
     {
         id: 21,
@@ -271,7 +271,7 @@ const atmData = [
         coins: ["BTC"],
         location: { lat: 18.1894, lng: -65.9674 },
         city: "Juncos",
-        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=800&h=600&fit=crop"
     },
     {
         id: 22,
@@ -284,7 +284,7 @@ const atmData = [
         coins: ["BTC", "ETH"],
         location: { lat: 18.0469, lng: -65.8792 },
         city: "Yabucoa",
-        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=800&h=600&fit=crop"
     },
     {
         id: 23,
@@ -297,7 +297,7 @@ const atmData = [
         coins: ["Bitcoin", "Ethereum"],
         location: { lat: 18.3980, lng: -66.1551 },
         city: "Bayamón",
-        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=800&h=600&fit=crop"
     },
     {
         id: 24,
@@ -310,7 +310,7 @@ const atmData = [
         coins: ["Bitcoin", "Ethereum"],
         location: { lat: 18.2344, lng: -66.0368 },
         city: "Caguas",
-        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=800&h=600&fit=crop"
     },
     {
         id: 25,
@@ -323,7 +323,7 @@ const atmData = [
         coins: ["Bitcoin", "Ethereum"],
         location: { lat: 18.3793, lng: -65.9573 },
         city: "Carolina",
-        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=800&h=600&fit=crop"
     },
     {
         id: 26,
@@ -336,7 +336,7 @@ const atmData = [
         coins: ["Bitcoin", "Ethereum"],
         location: { lat: 18.3361, lng: -66.4688 },
         city: "Ciales",
-        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=800&h=600&fit=crop"
     },
     {
         id: 27,
@@ -349,7 +349,7 @@ const atmData = [
         coins: ["Bitcoin", "Ethereum"],
         location: { lat: 18.4589, lng: -66.2578 },
         city: "Dorado",
-        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=800&h=600&fit=crop"
     },
     {
         id: 28,
@@ -362,7 +362,7 @@ const atmData = [
         coins: ["Bitcoin", "Ethereum"],
         location: { lat: 18.4442, lng: -66.0285 },
         city: "Carolina",
-        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=800&h=600&fit=crop"
     },
     {
         id: 29,
@@ -375,7 +375,7 @@ const atmData = [
         coins: ["Bitcoin", "Ethereum"],
         location: { lat: 18.4587, lng: -66.0694 },
         city: "San Juan",
-        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=800&h=600&fit=crop"
     },
     {
         id: 30,
@@ -388,7 +388,7 @@ const atmData = [
         coins: ["Bitcoin", "Ethereum"],
         location: { lat: 18.4112, lng: -66.0633 },
         city: "San Juan",
-        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=800&h=600&fit=crop"
     },
     {
         id: 31,
@@ -401,7 +401,7 @@ const atmData = [
         coins: ["Bitcoin", "Ethereum"],
         location: { lat: 18.0115, lng: -66.6138 },
         city: "Ponce",
-        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=800&h=600&fit=crop"
     },
     {
         id: 32,
@@ -414,7 +414,7 @@ const atmData = [
         coins: ["Bitcoin", "Ethereum"],
         location: { lat: 18.1876, lng: -65.9601 },
         city: "San Lorenzo",
-        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=800&h=600&fit=crop"
     },
     {
         id: 33,
@@ -427,7 +427,7 @@ const atmData = [
         coins: ["Bitcoin", "Ethereum", "Tether", "Litecoin"],
         location: { lat: 18.4054, lng: -65.9792 },
         city: "Bayamón",
-        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1519162584292-56dfc9eb5db4?w=800&h=600&fit=crop"
     },
     {
         id: 34,
@@ -440,7 +440,7 @@ const atmData = [
         coins: ["Bitcoin", "Ethereum", "Tether", "Dogecoin", "Ripple"],
         location: { lat: 18.4037, lng: -66.0636 },
         city: "San Juan",
-        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=800&h=600&fit=crop"
     },
     {
         id: 35,
@@ -453,7 +453,7 @@ const atmData = [
         coins: ["Bitcoin", "Ethereum", "Bitcoin Cash", "USD Coin"],
         location: { lat: 18.3793, lng: -66.1635 },
         city: "Carolina",
-        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=300&h=200&fit=crop"
+        image: "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=800&h=600&fit=crop"
     }
 ];
 
@@ -468,11 +468,6 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM Content Loaded');
     setupEventListeners();
     handleRoute();
-    if (typeof google !== 'undefined' && google.maps) {
-        initMap();
-    } else {
-        console.warn('Google Maps API not loaded');
-    }
 });
 
 // Set up event listeners for navigation and search
@@ -733,6 +728,10 @@ function updateATMList(searchTerm = '', atms = atmData) {
 
     atmList.innerHTML = filteredATMs.map(atm => `
         <div class="atm-card">
+            <img src="${atm.image || 'https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=800&h=600&fit=crop'}" 
+                 alt="${atm.name}"
+                 class="atm-image"
+                 onerror="this.src='https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=800&h=600&fit=crop'">
             <div class="atm-info">
                 <h3>${atm.name}</h3>
                 <p class="address">${atm.address}</p>
@@ -770,6 +769,12 @@ function updateATMList(searchTerm = '', atms = atmData) {
 function initMap() {
     console.log('Initializing map');
     try {
+        const mapElement = document.getElementById('map');
+        if (!mapElement) {
+            console.error('Map container not found');
+            return;
+        }
+
         const mapOptions = {
             center: { lat: 18.2208, lng: -66.5901 },
             zoom: 9,
@@ -782,15 +787,24 @@ function initMap() {
             ]
         };
 
-        const mapElement = document.getElementById('map');
-        if (!mapElement) {
-            console.error('Map container not found');
-            return;
-        }
-
         window.map = new google.maps.Map(mapElement, mapOptions);
         window.markers = [];
-        updateMarkers('');
+        
+        // Add error handling for map load
+        google.maps.event.addListenerOnce(window.map, 'idle', () => {
+            console.log('Map loaded successfully');
+            updateMarkers('');
+        });
+
+        google.maps.event.addListenerOnce(window.map, 'error', () => {
+            console.error('Error loading map');
+            mapElement.innerHTML = `
+                <div class="map-error">
+                    <h3>Map Loading Error</h3>
+                    <p>Sorry, we couldn't load the map. Please try refreshing the page.</p>
+                </div>
+            `;
+        });
     } catch (error) {
         console.error('Error initializing map:', error);
         const mapContainer = document.getElementById('map');
@@ -831,46 +845,54 @@ function updateMarkers(filter = '') {
             atm.coins.some(coin => normalizeCryptoName(coin).toLowerCase().includes(filter.toLowerCase()));
 
         if (matchesFilter) {
-            const position = { lat: atm.location.lat, lng: atm.location.lng };
-            const marker = new google.maps.Marker({
-                position,
-                map: window.map,
-                title: atm.name,
-                icon: {
-                    url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'
-                }
-            });
+            try {
+                const position = new google.maps.LatLng(atm.location.lat, atm.location.lng);
+                const marker = new google.maps.Marker({
+                    position,
+                    map: window.map,
+                    title: atm.name,
+                    icon: {
+                        url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'
+                    }
+                });
 
-            const infoWindow = new google.maps.InfoWindow({
-                content: `
-                    <div class="info-window">
-                        <h3>${atm.name}</h3>
-                        <p>${atm.address}</p>
-                        <p>Operator: ${atm.operator}</p>
-                        <p>${atm.hours}</p>
-                        <div class="supported-coins">
-                            ${atm.coins.map(coin => `<span class="coin">${coin}</span>`).join('')}
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `
+                        <div class="info-window">
+                            <h3>${atm.name}</h3>
+                            <p>${atm.address}</p>
+                            <p>Operator: ${atm.operator}</p>
+                            <p>${atm.hours}</p>
+                            <div class="supported-coins">
+                                ${atm.coins.map(coin => `<span class="coin">${coin}</span>`).join('')}
+                            </div>
+                            <a href="https://www.google.com/maps?q=${position.lat()},${position.lng()}" 
+                               target="_blank">Get Directions</a>
                         </div>
-                        <a href="https://www.google.com/maps?q=${atm.location.lat},${atm.location.lng}" 
-                           target="_blank">Get Directions</a>
-                    </div>
-                `
-            });
+                    `
+                });
 
-            marker.addListener('click', () => {
-                infoWindow.open(window.map, marker);
-            });
+                marker.addListener('click', () => {
+                    infoWindow.open(window.map, marker);
+                });
 
-            window.markers.push(marker);
-            bounds.extend(position);
-            hasValidMarkers = true;
+                window.markers.push(marker);
+                bounds.extend(position);
+                hasValidMarkers = true;
+            } catch (error) {
+                console.error('Error creating marker for ATM:', atm, error);
+            }
         }
     });
 
-    if (hasValidMarkers) {
-        window.map.fitBounds(bounds);
-        if (window.map.getZoom() > 15) {
-            window.map.setZoom(15);
+    if (hasValidMarkers && window.map) {
+        try {
+            window.map.fitBounds(bounds);
+            if (window.map.getZoom() > 15) {
+                window.map.setZoom(15);
+            }
+        } catch (error) {
+            console.error('Error adjusting map bounds:', error);
         }
     }
 }
