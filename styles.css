@@ -171,7 +171,123 @@ main {
     box-shadow: 0 2px 4px var(--shadow-color);
 }
 
-.atm-grid,
+.atm-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.atm-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.atm-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.atm-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+}
+
+.atm-info {
+    padding: 20px;
+}
+
+.atm-info h3 {
+    margin: 0 0 12px 0;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.atm-info .address {
+    color: var(--text-light);
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.atm-info .operator {
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.atm-info .hours {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 12px;
+}
+
+.supported-coins {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.coin {
+    background: #f0f0f0;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-dark);
+}
+
+.atm-actions {
+    padding: 0 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.atm-actions a {
+    text-decoration: none;
+    color: var(--text-dark);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+}
+
+.atm-actions a:hover {
+    background-color: #f5f5f5;
+}
+
+.atm-actions i {
+    font-size: 1rem;
+    color: var(--primary-color);
+}
+
+@media (max-width: 1200px) {
+    .atm-list {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .atm-list {
+        grid-template-columns: 1fr;
+        padding: 12px;
+    }
+    
+    .atm-image {
+        height: 180px;
+    }
+}
+
 .neighborhood-cards,
 .crypto-cards {
     display: grid;
@@ -180,7 +296,6 @@ main {
     margin-top: 24px;
 }
 
-.atm-card,
 .neighborhood-card,
 .crypto-card {
     background: white;
@@ -193,233 +308,10 @@ main {
     flex-direction: column;
 }
 
-.atm-card:hover,
 .neighborhood-card:hover,
 .crypto-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.atm-card img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-}
-
-.atm-info {
-    padding: 16px;
-}
-
-.operator {
-    font-weight: 600;
-    font-size: 1.1em;
-    margin-bottom: 8px;
-}
-
-.address, .phone {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #666;
-    text-decoration: none;
-    margin-bottom: 8px;
-}
-
-.address:hover, .phone:hover {
-    color: #FF385C;
-}
-
-.coins {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 12px;
-}
-
-.coin-badge {
-    background: #f5f5f5;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.9em;
-    color: #666;
-}
-
-.visit-website {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    background-color: #4285F4;
-    color: white;
-    text-align: center;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: background-color 0.2s;
-    margin-top: auto;
-}
-
-.visit-website:hover {
-    background-color: #3367D6;
-}
-
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
-.modal-content {
-    background: white;
-    border-radius: 12px;
-    padding: 32px;
-    max-width: 600px;
-    width: 90%;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-}
-
-.close {
-    position: absolute;
-    top: 24px;
-    right: 24px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--text-light);
-}
-
-.footer-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 24px 80px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid var(--border-color);
-}
-
-.footer-nav {
-    display: flex;
-    gap: 24px;
-}
-
-.footer-nav a {
-    color: var(--text-dark);
-    text-decoration: none;
-}
-
-@media (max-width: 1200px) {
-    .atm-grid,
-    .neighborhood-cards,
-    .crypto-cards {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .content-grid {
-        padding: 0 16px;
-    }
-    
-    .atm-grid,
-    .neighborhood-cards,
-    .crypto-cards {
-        grid-template-columns: 1fr;
-    }
-
-    .footer-content {
-        flex-direction: column;
-        gap: 16px;
-        text-align: center;
-        padding: 24px;
-    }
-}
-
-/* Loading and empty states */
-.loading, .empty-state {
-    text-align: center;
-    padding: 40px;
-    color: var(--text-light);
-}
-
-.api-error {
-    text-align: center;
-    padding: 40px;
-    background: #FFF3F3;
-    border-radius: 12px;
-    margin: 20px 0;
-    color: #E61E4D;
-}
-
-.atm-card .address {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 8px 0;
-    color: #333;
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-
-.atm-card .address:hover {
-    color: #FF385C;
-}
-
-.modal-details .location-links {
-    margin-bottom: 16px;
-}
-
-.modal-details .map-links {
-    display: flex;
-    gap: 16px;
-    margin-top: 8px;
-}
-
-.modal-details .map-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background-color: #f5f5f5;
-    border-radius: 8px;
-    color: #333;
-    text-decoration: none;
-    transition: all 0.2s ease;
-}
-
-.modal-details .map-link:hover {
-    background-color: #FF385C;
-    color: white;
-}
-
-.modal-details .map-link i {
-    font-size: 16px;
-}
-
-@media (max-width: 768px) {
-    .modal-details .map-links {
-        flex-direction: column;
-        gap: 8px;
-    }
-    
-    .modal-details .map-link {
-        width: 100%;
-        justify-content: center;
-    }
-}
-
-/* Neighborhood Cards */
-.neighborhoods-grid {
-    display: block;
-    width: 100%;
-    padding: 24px;
 }
 
 .neighborhood-card h3 {
@@ -448,7 +340,6 @@ main {
     background-color: #E61E4D;
 }
 
-/* Cryptocurrency Cards */
 .crypto-grid {
     padding: 2rem;
 }
