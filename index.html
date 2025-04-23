@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bitcoin ATMs in Puerto Rico | Find Crypto ATM Locations Near You</title>
-    <meta name="description" content="Locate Bitcoin ATMs in Puerto Rico with our comprehensive directory. Find 30+ cryptocurrency ATM locations in San Juan, Carolina, Bayamón, and across PR. Real-time updates, directions & supported coins.">
+    <meta name="description" content="Find Bitcoin and cryptocurrency ATMs across Puerto Rico. Locate ATMs by neighborhood, supported coins, and get directions.">
     <meta name="keywords" content="Bitcoin ATM Puerto Rico, Crypto ATM San Juan, Bitcoin locations PR, cryptocurrency ATM Puerto Rico, Athena Bitcoin PR, Coinflip Puerto Rico">
     
     <!-- Open Graph Tags -->
     <meta property="og:title" content="Bitcoin ATMs in Puerto Rico | Find Crypto ATM Locations Near You">
-    <meta property="og:description" content="Locate Bitcoin ATMs in Puerto Rico with our comprehensive directory. Find 30+ cryptocurrency ATM locations in San Juan, Carolina, Bayamón, and across PR.">
+    <meta property="og:description" content="Find Bitcoin and cryptocurrency ATMs across Puerto Rico. Locate ATMs by neighborhood, supported coins, and get directions.">
     <meta property="og:url" content="https://cryptoatmspr.com">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://cryptoatmspr.com/images/bitcoin-atm-pr.jpg">
@@ -23,14 +23,13 @@
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://cryptoatmspr.com">
     <link rel="alternate" hreflang="es" href="https://cryptoatmspr.com/es">
-    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/brands.min.css">
-    <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16x16.png">
-    <link rel="manifest" href="./site.webmanifest">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
     
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -51,10 +50,10 @@
 <body>
     <header>
         <nav class="navbar" aria-label="Main navigation">
-            <a href="./" class="logo">Crypto ATMs PR</a>
+            <a href="/" class="logo">Crypto ATMs PR</a>
             <div class="nav-links">
-                <a href="./about.html">About</a>
-                <a href="./add-atm.html" class="add-atm-btn">Add ATM</a>
+                <a href="/about">About</a>
+                <a href="/add-atm" class="add-atm-btn">Add ATM</a>
             </div>
         </nav>
     </header>
@@ -67,42 +66,37 @@
                        id="searchInput" 
                        placeholder="Search Bitcoin ATMs by city, location, or operator"
                        aria-label="Search Bitcoin ATMs">
-                <button id="searchButton" aria-label="Search">
-                    <i class="fas fa-search"></i>
-                </button>
+                <button id="searchButton" aria-label="Search">Search</button>
             </div>
         </section>
 
         <nav class="filters-bar" aria-label="Filter options">
-            <button class="filter-button active" data-filter="all">
-                <i class="fas fa-list"></i>
+            <a href="/" class="filter-button active" data-filter="all">
+                <i class="fas fa-list" aria-hidden="true"></i>
                 <span>All ATMs</span>
-            </button>
-            <button class="filter-button" data-filter="neighborhoods">
-                <i class="fas fa-map-marker-alt"></i>
+            </a>
+            <a href="/neighborhoods" class="filter-button" data-filter="neighborhoods">
+                <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
                 <span>Neighborhoods</span>
-            </button>
-            <button class="filter-button" data-filter="cryptocurrencies">
-                <i class="fas fa-coins"></i>
+            </a>
+            <a href="/cryptocurrencies" class="filter-button" data-filter="cryptocurrencies">
+                <i class="fas fa-coins" aria-hidden="true"></i>
                 <span>Cryptocurrencies</span>
-            </button>
+            </a>
         </nav>
 
         <div class="content-grid">
-            <section class="atm-list content-section" aria-label="Bitcoin ATM Locations">
-                <!-- ATM list content will be dynamically inserted here -->
+            <section id="all-atms" class="content-section">
+                <div id="map" class="map-container"></div>
+                <div id="atm-list" class="atm-list"></div>
             </section>
-            
-            <section class="map-container content-section" aria-label="Interactive Map">
-                <div id="map"></div>
+
+            <section id="neighborhoods" class="content-section" style="display: none;">
+                <!-- Content will be loaded dynamically -->
             </section>
-            
-            <section class="neighborhoods-grid content-section" aria-label="Neighborhoods">
-                <!-- Neighborhood content will be dynamically inserted here -->
-            </section>
-            
-            <section class="crypto-grid content-section" aria-label="Cryptocurrencies">
-                <!-- Cryptocurrency content will be dynamically inserted here -->
+
+            <section id="cryptocurrencies" class="content-section" style="display: none;">
+                <!-- Content will be loaded dynamically -->
             </section>
         </div>
     </main>
@@ -115,23 +109,16 @@
 
     <footer>
         <div class="footer-content">
-            <p>&copy; 2024 Puerto Crypto - Bitcoin ATM Directory</p>
+            <p>&copy; 2024 Crypto ATMs PR - Bitcoin ATM Directory</p>
             <div class="footer-nav">
-                <a href="./about.html">About</a>
-                <a href="./add-atm.html" class="add-atm-btn">Add ATM</a>
-                <a href="./privacy.html">Privacy Policy</a>
+                <a href="/about">About</a>
+                <a href="/add-atm">Add ATM</a>
+                <a href="/privacy">Privacy Policy</a>
             </div>
         </div>
     </footer>
 
-    <!-- Load our script first -->
-    <script src="./script.js"></script>
-    
-    <!-- Google Maps API -->
-    <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBP_vwigGB-0Ecmcz4GFSqXqMfC0LLgfIQ&callback=initMap"
-        async
-        defer
-    ></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
+    <script src="/script.js"></script>
 </body>
 </html> 
