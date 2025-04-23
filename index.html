@@ -118,7 +118,21 @@
         </div>
     </footer>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
+    <script>
+        window.initMap = function() {
+            console.log('Google Maps API loaded successfully');
+        };
+        window.gm_authFailure = function() {
+            console.error('Google Maps authentication failed');
+            document.getElementById('map').innerHTML = `
+                <div class="map-error">
+                    <h3>Map Loading Error</h3>
+                    <p>Sorry, we couldn't load the map. Please try refreshing the page.</p>
+                </div>
+            `;
+        };
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBP_vwigGB-0Ecmcz4GFSqXqMfC0LLgfIQ&callback=initMap" async defer></script>
     <script src="/script.js"></script>
 </body>
 </html> 
