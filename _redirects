@@ -1,3 +1,7 @@
 /* /index.html 200
 /neighborhoods/* /index.html 200
-/cryptocurrencies/* /index.html 200 
+/cryptocurrencies/* /index.html 200
+
+# Redirect old query parameter URLs to new clean URLs
+/?view=neighborhoods&city=:city /neighborhoods/:city 301
+/?neighborhood=:city /neighborhoods/:city 301 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bitcoin ATMs by Neighborhood in Puerto Rico | Crypto ATMs PR</title>
-    <meta name="description" content="Find Bitcoin ATMs in neighborhoods across Puerto Rico. Locate cryptocurrency ATMs in San Juan, Carolina, Bayamón, and other cities in PR.">
+    <meta name="description" content="Find Bitcoin ATMs in neighborhoods across Puerto Rico. Locate cryptocurrency ATMs in San Juan, Carolina, Bayamón, and other cities.">
     <meta name="keywords" content="Bitcoin ATM Puerto Rico, Crypto ATM locations, San Juan Bitcoin, Carolina cryptocurrency, Bayamón Bitcoin ATM">
     <link rel="stylesheet" href="/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -19,8 +19,8 @@
         <nav class="navbar" aria-label="Main navigation">
             <a href="/" class="logo">Crypto ATMs PR</a>
             <div class="nav-links">
-                <a href="/about.html">About</a>
-                <a href="/add-atm.html" class="add-atm-btn">Add ATM</a>
+                <a href="/about">About</a>
+                <a href="/add-atm" class="add-atm-btn">Add ATM</a>
             </div>
         </nav>
     </header>
@@ -42,59 +42,139 @@
                 <i class="fas fa-list" aria-hidden="true"></i>
                 <span>All ATMs</span>
             </a>
-            <a href="/neighborhoods.html" class="filter-button active" data-filter="neighborhoods">
+            <a href="/neighborhoods" class="filter-button active" data-filter="neighborhoods">
                 <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
                 <span>Neighborhoods</span>
             </a>
-            <a href="/cryptocurrencies.html" class="filter-button" data-filter="cryptocurrencies">
+            <a href="/cryptocurrencies" class="filter-button" data-filter="cryptocurrencies">
                 <i class="fas fa-coins" aria-hidden="true"></i>
                 <span>Cryptocurrencies</span>
             </a>
         </nav>
 
         <div class="content-grid">
-            <section class="neighborhoods-grid content-section" aria-label="Neighborhoods">
+            <section id="neighborhoods" class="content-section" aria-label="Neighborhoods">
                 <h2>Bitcoin ATMs by Neighborhood in Puerto Rico</h2>
                 <div class="neighborhood-cards">
                     <div class="neighborhood-card">
                         <h3>San Juan</h3>
-                        <p>8 ATMs Available</p>
-                        <a href="/?neighborhood=san-juan" class="view-atms-btn">View ATMs</a>
+                        <p>4 ATMs</p>
+                        <a href="/San/Juan" class="view-atms-btn">View ATMs</a>
                     </div>
                     <div class="neighborhood-card">
                         <h3>Carolina</h3>
-                        <p>6 ATMs Available</p>
-                        <a href="/?neighborhood=carolina" class="view-atms-btn">View ATMs</a>
+                        <p>4 ATMs</p>
+                        <a href="/Carolina" class="view-atms-btn">View ATMs</a>
                     </div>
                     <div class="neighborhood-card">
                         <h3>Bayamón</h3>
-                        <p>5 ATMs Available</p>
-                        <a href="/?neighborhood=bayamon" class="view-atms-btn">View ATMs</a>
+                        <p>3 ATMs</p>
+                        <a href="/Bayamón" class="view-atms-btn">View ATMs</a>
                     </div>
                     <div class="neighborhood-card">
                         <h3>Ponce</h3>
-                        <p>4 ATMs Available</p>
-                        <a href="/?neighborhood=ponce" class="view-atms-btn">View ATMs</a>
-                    </div>
-                    <div class="neighborhood-card">
-                        <h3>Caguas</h3>
-                        <p>4 ATMs Available</p>
-                        <a href="/?neighborhood=caguas" class="view-atms-btn">View ATMs</a>
+                        <p>2 ATMs</p>
+                        <a href="/Ponce" class="view-atms-btn">View ATMs</a>
                     </div>
                     <div class="neighborhood-card">
                         <h3>Mayagüez</h3>
-                        <p>3 ATMs Available</p>
-                        <a href="/?neighborhood=mayaguez" class="view-atms-btn">View ATMs</a>
+                        <p>1 ATM</p>
+                        <a href="/Mayagüez" class="view-atms-btn">View ATMs</a>
                     </div>
                     <div class="neighborhood-card">
-                        <h3>Guaynabo</h3>
-                        <p>2 ATMs Available</p>
-                        <a href="/?neighborhood=guaynabo" class="view-atms-btn">View ATMs</a>
+                        <h3>Hatillo</h3>
+                        <p>1 ATM</p>
+                        <a href="/Hatillo" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Arecibo</h3>
+                        <p>1 ATM</p>
+                        <a href="/Arecibo" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Caguas</h3>
+                        <p>2 ATMs</p>
+                        <a href="/Caguas" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Aguadilla</h3>
+                        <p>1 ATM</p>
+                        <a href="/Aguadilla" class="view-atms-btn">View ATMs</a>
                     </div>
                     <div class="neighborhood-card">
                         <h3>Fajardo</h3>
-                        <p>2 ATMs Available</p>
-                        <a href="/?neighborhood=fajardo" class="view-atms-btn">View ATMs</a>
+                        <p>1 ATM</p>
+                        <a href="/Fajardo" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Guaynabo</h3>
+                        <p>2 ATMs</p>
+                        <a href="/Guaynabo" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Toa Baja</h3>
+                        <p>1 ATM</p>
+                        <a href="/Toa/Baja" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Humacao</h3>
+                        <p>1 ATM</p>
+                        <a href="/Humacao" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Vega Baja</h3>
+                        <p>1 ATM</p>
+                        <a href="/Vega/Baja" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Toa Alta</h3>
+                        <p>1 ATM</p>
+                        <a href="/Toa/Alta" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Añasco</h3>
+                        <p>1 ATM</p>
+                        <a href="/Añasco" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Río Grande</h3>
+                        <p>1 ATM</p>
+                        <a href="/Río/Grande" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Luquillo</h3>
+                        <p>1 ATM</p>
+                        <a href="/Luquillo" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Canóvanas</h3>
+                        <p>1 ATM</p>
+                        <a href="/Canóvanas" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Juncos</h3>
+                        <p>1 ATM</p>
+                        <a href="/Juncos" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Yabucoa</h3>
+                        <p>1 ATM</p>
+                        <a href="/Yabucoa" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Ciales</h3>
+                        <p>1 ATM</p>
+                        <a href="/Ciales" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>Dorado</h3>
+                        <p>1 ATM</p>
+                        <a href="/Dorado" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="neighborhood-card">
+                        <h3>San Lorenzo</h3>
+                        <p>1 ATM</p>
+                        <a href="/San/Lorenzo" class="view-atms-btn">View ATMs</a>
                     </div>
                 </div>
             </section>
@@ -111,13 +191,13 @@
         <div class="footer-content">
             <p>&copy; 2024 Puerto Crypto - Bitcoin ATM Directory</p>
             <div class="footer-nav">
-                <a href="/about.html">About</a>
-                <a href="/add-atm.html" class="add-atm-btn">Add ATM</a>
-                <a href="/privacy.html">Privacy Policy</a>
+                <a href="/about">About</a>
+                <a href="/add-atm" class="add-atm-btn">Add ATM</a>
+                <a href="/privacy">Privacy Policy</a>
             </div>
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="/script.js"></script>
 </body>
 </html> 

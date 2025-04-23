@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supported Cryptocurrencies at Puerto Rico ATMs | Crypto ATMs PR</title>
-    <meta name="description" content="Find ATMs supporting Bitcoin, Ethereum, and other cryptocurrencies in Puerto Rico. View locations by supported coins and get real-time availability.">
+    <title>Cryptocurrency ATMs in Puerto Rico | Crypto ATMs PR</title>
+    <meta name="description" content="Find ATMs supporting Bitcoin, Ethereum, Litecoin, and other cryptocurrencies across Puerto Rico. Locate crypto ATMs near you.">
     <link rel="stylesheet" href="/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -18,8 +18,8 @@
         <nav class="navbar" aria-label="Main navigation">
             <a href="/" class="logo">Crypto ATMs PR</a>
             <div class="nav-links">
-                <a href="/about.html">About</a>
-                <a href="/add-atm.html" class="add-atm-btn">Add ATM</a>
+                <a href="/about">About</a>
+                <a href="/add-atm" class="add-atm-btn">Add ATM</a>
             </div>
         </nav>
     </header>
@@ -41,73 +41,109 @@
                 <i class="fas fa-list" aria-hidden="true"></i>
                 <span>All ATMs</span>
             </a>
-            <a href="/neighborhoods.html" class="filter-button" data-filter="neighborhoods">
+            <a href="/neighborhoods" class="filter-button" data-filter="neighborhoods">
                 <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
                 <span>Neighborhoods</span>
             </a>
-            <a href="/cryptocurrencies.html" class="filter-button active" data-filter="cryptocurrencies">
+            <a href="/cryptocurrencies" class="filter-button active" data-filter="cryptocurrencies">
                 <i class="fas fa-coins" aria-hidden="true"></i>
                 <span>Cryptocurrencies</span>
             </a>
         </nav>
 
         <div class="content-grid">
-            <section class="crypto-grid content-section" aria-label="Cryptocurrencies">
-                <h2>Supported Cryptocurrencies at Puerto Rico ATMs</h2>
+            <section id="cryptocurrencies" class="crypto-grid content-section" aria-label="Cryptocurrencies">
+                <h2>Cryptocurrency ATMs in Puerto Rico</h2>
                 <div class="crypto-cards">
                     <div class="crypto-card">
                         <div class="crypto-icon">
                             <i class="fab fa-bitcoin"></i>
                         </div>
-                        <h3>Bitcoin</h3>
+                        <h3>Bitcoin (BTC)</h3>
                         <p class="crypto-symbol">BTC</p>
-                        <p>32 ATMs Available</p>
-                        <a href="/?crypto=btc" class="view-atms-btn">View ATMs</a>
+                        <p>32 ATMs</p>
+                        <a href="/Bitcoin" class="view-atms-btn">View ATMs</a>
                     </div>
                     <div class="crypto-card">
                         <div class="crypto-icon">
                             <i class="fab fa-ethereum"></i>
                         </div>
-                        <h3>Ethereum</h3>
+                        <h3>Ethereum (ETH)</h3>
                         <p class="crypto-symbol">ETH</p>
-                        <p>15 ATMs Available</p>
-                        <a href="/?crypto=eth" class="view-atms-btn">View ATMs</a>
+                        <p>28 ATMs</p>
+                        <a href="/Ethereum" class="view-atms-btn">View ATMs</a>
                     </div>
                     <div class="crypto-card">
                         <div class="crypto-icon">
                             <i class="fas fa-dollar-sign"></i>
                         </div>
-                        <h3>Tether</h3>
+                        <h3>Tether (USDT)</h3>
                         <p class="crypto-symbol">USDT</p>
-                        <p>12 ATMs Available</p>
-                        <a href="/?crypto=usdt" class="view-atms-btn">View ATMs</a>
+                        <p>15 ATMs</p>
+                        <a href="/Tether" class="view-atms-btn">View ATMs</a>
                     </div>
                     <div class="crypto-card">
                         <div class="crypto-icon">
                             <i class="fas fa-coins"></i>
                         </div>
-                        <h3>Litecoin</h3>
+                        <h3>Litecoin (LTC)</h3>
                         <p class="crypto-symbol">LTC</p>
-                        <p>8 ATMs Available</p>
-                        <a href="/?crypto=ltc" class="view-atms-btn">View ATMs</a>
+                        <p>25 ATMs</p>
+                        <a href="/Litecoin" class="view-atms-btn">View ATMs</a>
                     </div>
                     <div class="crypto-card">
                         <div class="crypto-icon">
                             <i class="fas fa-chart-line"></i>
                         </div>
-                        <h3>Dogecoin</h3>
-                        <p class="crypto-symbol">DOGE</p>
-                        <p>6 ATMs Available</p>
-                        <a href="/?crypto=doge" class="view-atms-btn">View ATMs</a>
+                        <h3>Bitcoin Cash (BCH)</h3>
+                        <p class="crypto-symbol">BCH</p>
+                        <p>22 ATMs</p>
+                        <a href="/Bitcoin/Cash" class="view-atms-btn">View ATMs</a>
                     </div>
                     <div class="crypto-card">
                         <div class="crypto-icon">
                             <i class="fas fa-coins"></i>
                         </div>
-                        <h3>Other Coins</h3>
-                        <p class="crypto-symbol">Various</p>
-                        <p>4 ATMs Available</p>
-                        <a href="/?crypto=other" class="view-atms-btn">View ATMs</a>
+                        <h3>Dogecoin (DOGE)</h3>
+                        <p class="crypto-symbol">DOGE</p>
+                        <p>18 ATMs</p>
+                        <a href="/Dogecoin" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="crypto-card">
+                        <div class="crypto-icon">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <h3>USD Coin (USDC)</h3>
+                        <p class="crypto-symbol">USDC</p>
+                        <p>12 ATMs</p>
+                        <a href="/USD/Coin" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="crypto-card">
+                        <div class="crypto-icon">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <h3>Cardano (ADA)</h3>
+                        <p class="crypto-symbol">ADA</p>
+                        <p>10 ATMs</p>
+                        <a href="/Cardano" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="crypto-card">
+                        <div class="crypto-icon">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <h3>Monero (XMR)</h3>
+                        <p class="crypto-symbol">XMR</p>
+                        <p>8 ATMs</p>
+                        <a href="/Monero" class="view-atms-btn">View ATMs</a>
+                    </div>
+                    <div class="crypto-card">
+                        <div class="crypto-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3>Dash</h3>
+                        <p class="crypto-symbol">DASH</p>
+                        <p>6 ATMs</p>
+                        <a href="/Dash" class="view-atms-btn">View ATMs</a>
                     </div>
                 </div>
             </section>
@@ -124,9 +160,9 @@
         <div class="footer-content">
             <p>&copy; 2024 Puerto Crypto - Bitcoin ATM Directory</p>
             <div class="footer-nav">
-                <a href="/about.html">About</a>
-                <a href="/add-atm.html" class="add-atm-btn">Add ATM</a>
-                <a href="/privacy.html">Privacy Policy</a>
+                <a href="/about">About</a>
+                <a href="/add-atm" class="add-atm-btn">Add ATM</a>
+                <a href="/privacy">Privacy Policy</a>
             </div>
         </div>
     </footer>
