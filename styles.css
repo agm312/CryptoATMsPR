@@ -251,12 +251,19 @@ main {
     text-decoration: none;
 }
 
-/* Responsive */
+/* Cards for ATM, Neighborhoods, Cryptos */
+.atm-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
 @media (max-width: 768px) {
-    .atm-grid,
-    .neighborhood-cards,
-    .crypto-cards {
-        grid-template-columns: 1fr;
+    .atm-list {
+        grid-template-columns: 1fr; /* Stack on mobile */
     }
 
     .footer-content {
