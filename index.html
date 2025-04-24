@@ -119,9 +119,15 @@
     </footer>
 
     <script>
+        // Ensure initMap is defined globally
         window.initMap = function() {
-            console.log('Google Maps API loaded successfully');
+            // This will be overridden by script.js but ensures the function exists
+            console.log('Initial Map function called');
+            if (typeof initializeMap === 'function') {
+                initializeMap();
+            }
         };
+        
         window.gm_authFailure = function() {
             console.error('Google Maps authentication failed');
             document.getElementById('map').innerHTML = `
@@ -132,7 +138,13 @@
             `;
         };
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBP_vwigGB-0Ecmcz4GFSqXqMfC0LLgfIQ&callback=initMap&libraries=marker" async defer></script>
+    <!-- Load your script.js first -->
     <script src="/script.js"></script>
+    <!-- Then load Google Maps API -->
+    <script 
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBP_vwigGB-0Ecmcz4GFSqXqMfC0LLgfIQ&callback=initMap&libraries=marker" 
+        async 
+        defer
+    ></script>
 </body>
 </html> 

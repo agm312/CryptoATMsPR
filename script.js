@@ -766,7 +766,7 @@ function updateATMList(searchTerm = '', atms = atmData) {
 }
 
 // Initialize Google Map
-function initMap() {
+function initializeMap() {
     console.log('Initializing map');
     try {
         const mapElement = document.getElementById('map');
@@ -818,6 +818,12 @@ function initMap() {
         }
     }
 }
+
+// Ensure initMap is defined globally and calls our initialization function
+window.initMap = function() {
+    console.log('Google Maps callback received');
+    initializeMap();
+};
 
 // Update map markers based on filter
 function updateMarkers(filter = '') {
@@ -880,7 +886,8 @@ function updateMarkers(filter = '') {
                     `
                 });
 
-                marker.addListener('click', () => {
+                // Use the new gmp-click event for AdvancedMarkerElement
+                marker.addEventListener('gmp-click', () => {
                     infoWindow.open(window.map, marker);
                 });
 
