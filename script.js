@@ -775,29 +775,27 @@ function initializeMap() {
             return;
         }
 
+        // Simplified map options - removed styles since they're controlled by Map ID
         const mapOptions = {
             center: { lat: 18.2208, lng: -66.5901 },
             zoom: 9,
-            mapId: "fcfdd97616840d70",
-            styles: [
-                {
-                    featureType: "poi",
-                    elementType: "labels",
-                    stylers: [{ visibility: "off" }]
-                }
-            ]
+            mapId: "fcfdd97616840d70"
         };
 
-        window.map = new google.maps.Map(mapElement, mapOptions);
+        // Create the map instance
+        const map = new google.maps.Map(mapElement, mapOptions);
+        
+        // Store map instance globally
+        window.map = map;
         window.markers = [];
         
         // Add error handling for map load
-        google.maps.event.addListenerOnce(window.map, 'idle', () => {
+        google.maps.event.addListenerOnce(map, 'idle', () => {
             console.log('Map loaded successfully');
             updateMarkers('');
         });
 
-        google.maps.event.addListenerOnce(window.map, 'error', () => {
+        google.maps.event.addListenerOnce(map, 'error', () => {
             console.error('Error loading map');
             mapElement.innerHTML = `
                 <div class="map-error">
@@ -829,13 +827,20 @@ window.initMap = function() {
 // Update map markers based on filter
 function updateMarkers(filter = '') {
     console.log('Updating markers with filter:', filter);
-    if (!window.map || !window.markers) {
-        console.warn('Map or markers not initialized');
+    
+    // Get the map instance
+    const map = window.map;
+    
+    // Check if map is initialized
+    if (!map) {
+        console.warn('Map not initialized yet');
         return;
     }
 
-    // Clear existing markers
-    window.markers.forEach(marker => marker.map = null);
+    // Clear existing markers if they exist
+    if (window.markers) {
+        window.markers.forEach(marker => marker.map = null);
+    }
     window.markers = [];
 
     const bounds = new google.maps.LatLngBounds();
@@ -865,7 +870,7 @@ function updateMarkers(filter = '') {
 
                 // Create the advanced marker
                 const marker = new google.maps.marker.AdvancedMarkerElement({
-                    map: window.map,
+                    map: map,
                     position,
                     title: atm.name,
                     content: markerContent
@@ -889,7 +894,7 @@ function updateMarkers(filter = '') {
 
                 // Use the new gmp-click event for AdvancedMarkerElement
                 marker.addEventListener('gmp-click', () => {
-                    infoWindow.open(window.map, marker);
+                    infoWindow.open(map, marker);
                 });
 
                 window.markers.push(marker);
@@ -901,11 +906,11 @@ function updateMarkers(filter = '') {
         }
     });
 
-    if (hasValidMarkers && window.map) {
+    if (hasValidMarkers) {
         try {
-            window.map.fitBounds(bounds);
-            if (window.map.getZoom() > 15) {
-                window.map.setZoom(15);
+            map.fitBounds(bounds);
+            if (map.getZoom() > 15) {
+                map.setZoom(15);
             }
         } catch (error) {
             console.error('Error adjusting map bounds:', error);
