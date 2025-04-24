@@ -778,6 +778,7 @@ function initializeMap() {
         const mapOptions = {
             center: { lat: 18.2208, lng: -66.5901 },
             zoom: 9,
+            mapId: "fcfdd97616840d70",
             styles: [
                 {
                     featureType: "poi",
