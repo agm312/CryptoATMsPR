@@ -828,7 +828,7 @@ function updateMarkers(filter = '') {
     }
 
     // Clear existing markers
-    window.markers.forEach(marker => marker.setMap(null));
+    window.markers.forEach(marker => marker.map = null);
     window.markers = [];
 
     const bounds = new google.maps.LatLngBounds();
@@ -846,14 +846,22 @@ function updateMarkers(filter = '') {
 
         if (matchesFilter) {
             try {
-                const position = new google.maps.LatLng(atm.location.lat, atm.location.lng);
-                const marker = new google.maps.Marker({
-                    position,
+                const position = { lat: atm.location.lat, lng: atm.location.lng };
+                
+                // Create the marker content
+                const markerContent = document.createElement('div');
+                markerContent.className = 'marker-content';
+                markerContent.innerHTML = `
+                    <div class="marker-pin"></div>
+                    <div class="marker-title">${atm.name}</div>
+                `;
+
+                // Create the advanced marker
+                const marker = new google.maps.marker.AdvancedMarkerElement({
                     map: window.map,
+                    position,
                     title: atm.name,
-                    icon: {
-                        url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'
-                    }
+                    content: markerContent
                 });
 
                 const infoWindow = new google.maps.InfoWindow({
@@ -866,7 +874,7 @@ function updateMarkers(filter = '') {
                             <div class="supported-coins">
                                 ${atm.coins.map(coin => `<span class="coin">${coin}</span>`).join('')}
                             </div>
-                            <a href="https://www.google.com/maps?q=${position.lat()},${position.lng()}" 
+                            <a href="https://www.google.com/maps?q=${position.lat},${position.lng}" 
                                target="_blank">Get Directions</a>
                         </div>
                     `
